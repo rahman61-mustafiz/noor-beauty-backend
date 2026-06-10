@@ -114,13 +114,14 @@ router.post('/send-otp', sendOtpLimiter, async (req, res) => {
 
 router.post('/verify-otp', verifyOtpLimiter, async (req, res) => {
   try {
-    const { sessionToken, otp, name } = req.body;
+    const { phone, otp, name } = req.body;
 
-    if (!sessionToken || !otp) {
-      return res.status(400).json({ message: 'Session token and OTP are required' });
+    if (!phone || !otp) {
+      return res.status(400).json({ message: 'Phone number and OTP are required' });
     }
 
-    const session = await OtpSession.findOne({ sessionToken });
+    const normalized = normalizePhone(phone);
+    const session = await OtpSession.findOne({ phone: normalized });
 
     if (!session) {
       return res.status(400).json({ message: 'OTP session expired or not found. Request a new OTP.' });
@@ -156,10 +157,8 @@ router.post('/verify-otp', verifyOtpLimiter, async (req, res) => {
     const isNewUser = !user;
 
     if (isNewUser) {
-      if (!name || name.trim().length < 2) {
-        return res.status(400).json({ message: 'Name is required for new accounts (min 2 characters).' });
-      }
-      user = await User.create({ phone: session.phone, name: name.trim() });
+      const safeName = (name && name.trim().length >= 2) ? name.trim() : 'Guest';
+      user = await User.create({ phone: session.phone, name: safeName });
     } else {
       user.lastLoginAt = new Date();
       await user.save();
