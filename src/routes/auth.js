@@ -79,7 +79,7 @@ router.post('/send-otp', sendOtpLimiter, async (req, res) => {
     const normalized = normalizePhone(phone);
     const otp        = generateOtp();
     const sessionToken = uuidv4();
-    const expiresAt  = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+    const expiresAt  = new Date(Date.now() + 30 * 60 * 1000); // 5 minutes
 
     // Remove any existing session for this phone
     await OtpSession.deleteMany({ phone: normalized });
