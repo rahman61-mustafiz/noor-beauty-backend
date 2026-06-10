@@ -128,14 +128,14 @@ router.post('/verify-otp', verifyOtpLimiter, async (req, res) => {
     }
 
     if (new Date() > session.expiresAt) {
-      await OtpSession.deleteOne({ sessionToken });
+      await OtpSession.deleteOne({ _id: session._id });
       return res.status(400).json({ message: 'OTP has expired. Please request a new one.' });
     }
 
     session.attempts += 1;
 
     if (session.attempts > 5) {
-      await OtpSession.deleteOne({ sessionToken });
+      await OtpSession.deleteOne({ _id: session._id });
       return res.status(400).json({ message: 'Too many wrong attempts. Please request a new OTP.' });
     }
 
@@ -150,7 +150,7 @@ router.post('/verify-otp', verifyOtpLimiter, async (req, res) => {
     }
 
     // OTP is correct — clean up session
-    await OtpSession.deleteOne({ sessionToken });
+    await OtpSession.deleteOne({ _id: session._id });
 
     // Find or create user
     let user = await User.findOne({ phone: session.phone });
