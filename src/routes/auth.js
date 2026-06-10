@@ -8,6 +8,8 @@ const authMiddleware = require('../middleware/auth');
 
 const User       = require('../models/User');
 const OtpSession = require('../models/OtpSession');
+const Booking    = require('../models/Booking');
+const Review     = require('../models/Review');
 const { sendSms } = require('../services/sms');
 
 // ── BD phone validation ──────────────────────────────────────────────────────
@@ -352,6 +354,25 @@ router.post('/change-password', authMiddleware, async (req, res) => {
   } catch (err) {
     console.error('change-password error:', err);
     res.status(500).json({ message: 'Failed to change password. Please try again.' });
+  }
+});
+
+// DELETE /api/auth/account - permanently delete account + all user data
+router.delete('/account', authMiddleware, async (req, res) => {
+  try {
+    const userId = req.userId;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    await Booking.deleteMany({ customer: userId });
+    await Review.deleteMany({ customer: userId });
+    await OtpSession.deleteMany({ phone: user.phone });
+    await User.findByIdAndDelete(userId);
+
+    res.json({ message: 'Your account and all associated data have been permanently deleted.' });
+  } catch (err) {
+    console.error('delete-account error:', err);
+    res.status(500).json({ message: 'Failed to delete account. Please try again.' });
   }
 });
 
