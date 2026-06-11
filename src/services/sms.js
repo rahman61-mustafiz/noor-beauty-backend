@@ -8,6 +8,11 @@ async function sendSms(phone, message) {
     return;
   }
 
+  if (provider === 'bulksmsbd') {
+    await _sendViaBulkSmsBd(phone, message);
+    return;
+  }
+
   if (provider === 'sslwireless') {
     await _sendViaSslWireless(phone, message);
     return;
@@ -21,6 +26,27 @@ async function sendSms(phone, message) {
   throw new Error(`Unknown SMS_PROVIDER: ${provider}`);
 }
 
+async function _sendViaBulkSmsBd(phone, message) {
+  const apiKey   = process.env.SMS_BULKSMSBD_API_KEY;
+  const senderId = process.env.SMS_BULKSMSBD_SENDERID;
+
+  if (!apiKey || !senderId) throw new Error('bulksmsbd credentials not configured');
+
+  const to = phone.startsWith('+') ? phone.slice(1) : phone;
+
+  const res = await axios.get('http://bulksmsbd.net/api/smsapi', {
+    params: { api_key: apiKey, type: 'text', number: to, senderid: senderId, message },
+    timeout: 15000,
+  });
+
+  const body = (typeof res.data === 'object') ? JSON.stringify(res.data) : String(res.data);
+  const code = (res.data && res.data.response_code != null) ? String(res.data.response_code) : body;
+
+  if (!code.includes('202')) {
+    throw new Error(`bulksmsbd error: ${body}`);
+  }
+}
+
 async function _sendViaSslWireless(phone, message) {
   const user     = process.env.SMS_SSLWIRELESS_USER;
   const password = process.env.SMS_SSLWIRELESS_PASSWORD;
@@ -28,7 +54,6 @@ async function _sendViaSslWireless(phone, message) {
 
   if (!user || !password) throw new Error('SSL Wireless credentials not configured');
 
-  // Normalize: SSL Wireless expects 8801XXXXXXXXX (no +)
   const to = phone.startsWith('+') ? phone.slice(1) : phone;
 
   const res = await axios.post('https://sms.sslwireless.com/pushapi/dynamic/server.php', null, {
@@ -36,7 +61,6 @@ async function _sendViaSslWireless(phone, message) {
     timeout: 10000,
   });
 
-  // SSL Wireless returns 1000 on success
   if (!res.data.toString().includes('1000')) {
     throw new Error(`SSL Wireless error: ${res.data}`);
   }
