@@ -29,6 +29,8 @@ app.use('/api/services',           require('./routes/services'));
 app.use('/api/staff',              require('./routes/staff'));
 app.use('/api/bookings',           require('./routes/bookings'));
 app.use('/api/reviews',            require('./routes/reviews'));
+app.use('/api/gallery',            require('./routes/gallery'));
+app.use('/api/announcement',       require('./routes/announcement'));
 app.use('/api/admin/dashboard',    require('./routes/admin/dashboard'));
 app.use('/api/admin/customers',    require('./routes/admin/customers'));
 app.use('/api/admin/bookings',     require('./routes/admin/bookings'));
@@ -36,6 +38,8 @@ app.use('/api/admin/staff',        require('./routes/admin/staff'));
 app.use('/api/admin/services',     require('./routes/admin/services'));
 app.use('/api/admin/reviews',      require('./routes/admin/reviews'));
 app.use('/api/admin/analytics',    require('./routes/admin/analytics'));
+app.use('/api/admin/gallery',      require('./routes/admin/gallery'));
+app.use('/api/admin/announcement', require('./routes/admin/announcement'));
 
 app.get('/health', (_, res) => res.json({ status: 'ok', env: process.env.NODE_ENV }));
 
