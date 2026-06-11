@@ -41,7 +41,7 @@ function toDto(b) {
     id: b._id.toString(),
     customerName: b.customer?.name || 'Unknown',
     customerPhone: b.customer?.phone || '',
-    serviceName: b.service?.name || 'Unknown',
+    serviceName: b.serviceName || b.service?.name || 'Unknown',
     servicePrice: b.totalAmount != null ? b.totalAmount : (b.service?.price || 0),
     stylistName: b.staff?.name || 'Unknown',
     startTime: b.startTime,

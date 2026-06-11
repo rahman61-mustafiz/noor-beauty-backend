@@ -3,24 +3,48 @@ const auth    = require('../middleware/auth');
 const Booking = require('../models/Booking');
 const Service = require('../models/Service');
 
-// POST /api/bookings
+const isObjectId = (v) => typeof v === 'string' && /^[0-9a-fA-F]{24}$/.test(v);
+
 router.post('/', auth, async (req, res) => {
   try {
-    const { serviceId, staffId, startTime } = req.body;
-    const service = await Service.findById(serviceId);
-    if (!service) return res.status(404).json({ message: 'Service not found' });
+    const {
+      serviceId, serviceName, staffId,
+      bookingDate, startTime, durationMinutes,
+      totalAmount, notes,
+    } = req.body;
 
-    const start = new Date(startTime);
-    const end   = new Date(start.getTime() + service.duration * 60 * 1000);
+    let start;
+    if (bookingDate && typeof startTime === 'string' && /^\d{1,2}:\d{2}$/.test(startTime)) {
+      start = new Date(`${bookingDate}T${startTime.padStart(5, '0')}:00`);
+    } else if (startTime) {
+      start = new Date(startTime);
+    }
+    if (!start || isNaN(start.getTime())) start = new Date();
+
+    const dur = Number(durationMinutes) || 60;
+    const end = new Date(start.getTime() + dur * 60 * 1000);
+
+    let serviceRef;
+    let amount = (totalAmount != null && totalAmount !== '') ? Number(totalAmount) : null;
+    let name = serviceName;
+    if (isObjectId(serviceId)) {
+      const svc = await Service.findById(serviceId);
+      if (svc) {
+        serviceRef = svc._id;
+        if (amount == null) amount = svc.price;
+        if (!name) name = svc.name;
+      }
+    }
 
     const booking = await Booking.create({
-      customer: req.userId,
-      service:  serviceId,
-      staff:    staffId,
-      startTime: start,
-      endTime: end,
-      totalAmount: service.price,
-      notes: req.body.notes,
+      customer:    req.userId,
+      service:     serviceRef,
+      serviceName: name || 'Service',
+      staff:       isObjectId(staffId) ? staffId : undefined,
+      startTime:   start,
+      endTime:     end,
+      totalAmount: amount != null ? amount : 0,
+      notes,
     });
 
     res.status(201).json({ data: { id: booking._id.toString(), status: booking.status } });
@@ -30,7 +54,6 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// GET /api/bookings/customer/:customerId
 router.get('/customer/:customerId', auth, async (req, res) => {
   try {
     if (req.userId !== req.params.customerId) {
@@ -47,7 +70,6 @@ router.get('/customer/:customerId', auth, async (req, res) => {
   }
 });
 
-// GET /api/bookings/:id
 router.get('/:id', auth, async (req, res) => {
   try {
     const b = await Booking.findById(req.params.id)
@@ -62,7 +84,6 @@ router.get('/:id', auth, async (req, res) => {
   }
 });
 
-// PUT /api/bookings/:id
 router.put('/:id', auth, async (req, res) => {
   try {
     const b = await Booking.findById(req.params.id);
@@ -79,9 +100,9 @@ router.put('/:id', auth, async (req, res) => {
 function toDto(b) {
   return {
     id: b._id.toString(),
-    serviceName: b.service?.name || 'Unknown',
+    serviceName: b.serviceName || b.service?.name || 'Service',
     servicePrice: b.totalAmount != null ? b.totalAmount : (b.service?.price || 0),
-    stylistName: b.staff?.name || 'Unknown',
+    stylistName: b.staff?.name || 'Salon assigns',
     startTime: b.startTime,
     endTime: b.endTime,
     status: b.status,
