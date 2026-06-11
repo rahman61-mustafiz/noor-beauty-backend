@@ -80,7 +80,7 @@ function toDto(b) {
   return {
     id: b._id.toString(),
     serviceName: b.service?.name || 'Unknown',
-    servicePrice: b.service?.price || 0,
+    servicePrice: b.totalAmount != null ? b.totalAmount : (b.service?.price || 0),
     stylistName: b.staff?.name || 'Unknown',
     startTime: b.startTime,
     endTime: b.endTime,
