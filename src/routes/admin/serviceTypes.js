@@ -1,6 +1,8 @@
 const router      = require('express').Router();
 const adminAuth   = require('../../middleware/adminAuth');
 const ServiceType = require('../../models/ServiceType');
+const Service     = require('../../models/Service');
+const CATALOG     = require('../../data/serviceCatalog');
 
 const DEFAULTS = [
   'Hair Cut & Styling','Hair Color','Hair Treatment','Hair Spa','Keratin & Smoothening',
@@ -18,6 +20,34 @@ router.post('/seed-defaults', adminAuth, async (req, res) => {
   if (count > 0) return res.json({ data: [], message: 'Types already exist' });
   const docs = await ServiceType.insertMany(DEFAULTS.map((name, i) => ({ name, order: i })));
   res.status(201).json({ data: docs.map(d => toDto(d.toObject())) });
+});
+
+// Seed the real Noor catalog. Wipes existing types + services, then inserts the full list.
+router.post('/seed-catalog', adminAuth, async (req, res) => {
+  try {
+    await Service.deleteMany({});
+    await ServiceType.deleteMany({});
+    let typeCount = 0, svcCount = 0;
+    for (let i = 0; i < CATALOG.length; i++) {
+      const t = CATALOG[i];
+      const type = await ServiceType.create({ name: t.name, order: i, isActive: true });
+      typeCount++;
+      if (Array.isArray(t.services) && t.services.length) {
+        await Service.insertMany(t.services.map(s => ({
+          name: s.name,
+          serviceType: type._id,
+          duration: s.duration,
+          price: s.price,
+          variants: [],
+          isActive: true,
+        })));
+        svcCount += t.services.length;
+      }
+    }
+    res.status(201).json({ message: 'Catalog seeded', types: typeCount, services: svcCount });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 });
 
 router.post('/', adminAuth, async (req, res) => {
