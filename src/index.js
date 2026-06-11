@@ -40,6 +40,7 @@ app.use('/api/admin/services',     require('./routes/admin/services'));
 app.use('/api/admin/service-types', require('./routes/admin/serviceTypes'));
 app.use('/api/admin/reviews',      require('./routes/admin/reviews'));
 app.use('/api/admin/analytics',    require('./routes/admin/analytics'));
+app.use('/api/admin/reports',      require('./routes/admin/reports'));
 app.use('/api/admin/gallery',      require('./routes/admin/gallery'));
 app.use('/api/admin/announcement', require('./routes/admin/announcement'));
 
