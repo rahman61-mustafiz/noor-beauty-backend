@@ -22,7 +22,6 @@ router.post('/seed-defaults', adminAuth, async (req, res) => {
   res.status(201).json({ data: docs.map(d => toDto(d.toObject())) });
 });
 
-// Seed the real Noor catalog. Wipes existing types + services, then inserts the full list.
 router.post('/seed-catalog', adminAuth, async (req, res) => {
   try {
     await Service.deleteMany({});
@@ -30,7 +29,13 @@ router.post('/seed-catalog', adminAuth, async (req, res) => {
     let typeCount = 0, svcCount = 0;
     for (let i = 0; i < CATALOG.length; i++) {
       const t = CATALOG[i];
-      const type = await ServiceType.create({ name: t.name, order: i, isActive: true });
+      const type = await ServiceType.create({
+        name: t.name,
+        icon: t.icon || 'spa',
+        description: t.description || '',
+        order: i,
+        isActive: true,
+      });
       typeCount++;
       if (Array.isArray(t.services) && t.services.length) {
         await Service.insertMany(t.services.map(s => ({
