@@ -8,6 +8,11 @@ async function sendSms(phone, message) {
     return;
   }
 
+  if (provider === 'alphasms') {
+    await _sendViaAlphaSms(phone, message);
+    return;
+  }
+
   if (provider === 'bulksmsbd') {
     await _sendViaBulkSmsBd(phone, message);
     return;
@@ -81,6 +86,26 @@ async function _sendViaTwilio(phone, message) {
       timeout: 10000,
     }
   );
+}
+
+async function _sendViaAlphaSms(phone, message) {
+  const apiKey   = process.env.SMS_ALPHA_API_KEY;
+  const senderId = process.env.SMS_ALPHA_SENDERID;
+  if (!apiKey) throw new Error('Alpha SMS api key not configured');
+
+  const to = phone.startsWith('+') ? phone.slice(1) : phone;
+
+  const params = { api_key: apiKey, to, msg: message };
+  if (senderId) params.sender_id = senderId;
+
+  const res = await axios.post('https://api.sms.net.bd/sendsms',
+    new URLSearchParams(params), { timeout: 15000 });
+
+  const data = res.data;
+  const err = (data && typeof data === 'object') ? data.error : data;
+  if (String(err) !== '0') {
+    throw new Error(`Alpha SMS error: ${JSON.stringify(data)}`);
+  }
 }
 
 module.exports = { sendSms };
