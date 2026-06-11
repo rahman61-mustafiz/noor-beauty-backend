@@ -2,8 +2,7 @@ const router   = require('express').Router();
 const bcrypt   = require('bcryptjs');
 const jwt      = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
-const { authenticator } = require('otplib');
-authenticator.options = { window: 1 };
+const { totp } = require('otplib');
 
 // In-memory MFA session store (TTL 10 min)
 const mfaSessions = new Map();
@@ -78,7 +77,7 @@ router.post('/verify-mfa', (req, res) => {
     }
 
     const admin = getAdminCredentials();
-    const isValid = authenticator.verify({ token: code.trim(), secret: admin.mfaSecret });
+    const isValid = totp.verify({ token: code.trim(), secret: admin.mfaSecret });
     if (!isValid) {
       return res.status(401).json({ message: 'Invalid MFA code' });
     }
