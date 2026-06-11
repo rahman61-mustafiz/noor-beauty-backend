@@ -26,6 +26,7 @@ app.use(rateLimit({
 app.use('/api/auth',               require('./routes/auth'));
 app.use('/api/auth',               require('./routes/admin/auth')); // admin-login + verify-mfa
 app.use('/api/services',           require('./routes/services'));
+app.use('/api/service-types',      require('./routes/serviceTypes'));
 app.use('/api/staff',              require('./routes/staff'));
 app.use('/api/bookings',           require('./routes/bookings'));
 app.use('/api/reviews',            require('./routes/reviews'));
@@ -36,6 +37,7 @@ app.use('/api/admin/customers',    require('./routes/admin/customers'));
 app.use('/api/admin/bookings',     require('./routes/admin/bookings'));
 app.use('/api/admin/staff',        require('./routes/admin/staff'));
 app.use('/api/admin/services',     require('./routes/admin/services'));
+app.use('/api/admin/service-types', require('./routes/admin/serviceTypes'));
 app.use('/api/admin/reviews',      require('./routes/admin/reviews'));
 app.use('/api/admin/analytics',    require('./routes/admin/analytics'));
 app.use('/api/admin/gallery',      require('./routes/admin/gallery'));
