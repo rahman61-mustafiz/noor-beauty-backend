@@ -37,7 +37,14 @@ router.get('/menu', async (req, res) => {
           startingPrice: prices.length ? Math.min.apply(null, prices) : 0,
           baseDurationMin: durs.length ? Math.min.apply(null, durs) : 30,
           baseDurationMax: durs.length ? Math.max.apply(null, durs) : 60,
-          subOptions: list.map((s) => ({ name: s.name, durationMin: s.duration, price: s.price })),
+          subOptions: list.map((s) => ({
+            name: s.name,
+            durationMin: s.duration,
+            price: s.price,
+            variants: Array.isArray(s.variants)
+              ? s.variants.map((v) => ({ label: v.label, price: v.price }))
+              : [],
+          })),
         };
       })
       .filter((t) => t.subOptions.length > 0);
