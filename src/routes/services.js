@@ -24,9 +24,22 @@ router.get('/menu', async (req, res) => {
       const k = String(s.serviceType);
       (byType[k] = byType[k] || []).push(s);
     });
+    const baseOf = (n) => String(n || '').split(/ [-\u2013] /)[0].trim();
     const data = types
       .map((t) => {
-        const list = (byType[String(t._id)] || []).sort((a, b) => a.price - b.price);
+        const list = byType[String(t._id)] || [];
+        const groupMin = {};
+        list.forEach((s) => {
+          const b = baseOf(s.name);
+          if (groupMin[b] === undefined || s.price < groupMin[b]) groupMin[b] = s.price;
+        });
+        list.sort((a, b) => {
+          const ba = baseOf(a.name);
+          const bb = baseOf(b.name);
+          if (groupMin[ba] !== groupMin[bb]) return groupMin[ba] - groupMin[bb];
+          if (ba !== bb) return ba < bb ? -1 : 1;
+          return a.price - b.price;
+        });
         const prices = list.map((s) => s.price);
         const durs = list.map((s) => s.duration);
         return {
