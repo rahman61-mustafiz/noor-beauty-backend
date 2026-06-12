@@ -3,10 +3,29 @@ const bcrypt   = require('bcryptjs');
 const jwt      = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const { authenticator } = require('otplib');
+const rateLimit = require('express-rate-limit');
 authenticator.options = { window: 1 };
 
 // In-memory MFA session store (TTL 10 min)
 const mfaSessions = new Map();
+
+const adminLoginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  keyGenerator: (req) => (req.body.email || req.ip),
+  message: { message: 'Too many login attempts. Please wait 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const mfaLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  keyGenerator: (req) => (req.body.sessionToken || req.ip),
+  message: { message: 'Too many MFA attempts. Please login again.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 function getAdminCredentials() {
   return {
@@ -18,7 +37,7 @@ function getAdminCredentials() {
 
 // ── POST /api/auth/admin-login ────────────────────────────────────────────────
 
-router.post('/admin-login', async (req, res) => {
+router.post('/admin-login', adminLoginLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -64,7 +83,7 @@ router.post('/admin-login', async (req, res) => {
 
 // ── POST /api/auth/verify-mfa ─────────────────────────────────────────────────
 
-router.post('/verify-mfa', (req, res) => {
+router.post('/verify-mfa', mfaLimiter, (req, res) => {
   try {
     const { sessionToken, code } = req.body;
     if (!sessionToken || !code) {
