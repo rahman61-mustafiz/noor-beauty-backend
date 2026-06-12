@@ -15,7 +15,7 @@ router.post('/', auth, async (req, res) => {
 
     let start;
     if (bookingDate && typeof startTime === 'string' && /^\d{1,2}:\d{2}$/.test(startTime)) {
-      start = new Date(`${bookingDate}T${startTime.padStart(5, '0')}:00`);
+      start = new Date(`${bookingDate}T${startTime.padStart(5, '0')}:00+06:00`);
     } else if (startTime) {
       start = new Date(startTime);
     }
