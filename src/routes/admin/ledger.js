@@ -18,7 +18,7 @@ router.get('/', adminAuth, async (req, res) => {
     const start = new Date(`${fromStr}T00:00:00.000+06:00`);
     const end   = new Date(`${toStr}T23:59:59.999+06:00`);
     const entries = await Ledger.find({ date: { $gte: start, $lte: end } }).sort({ date: -1 }).lean();
-    const total = entries.reduce((s, e) => s + (e.amount || 0), 0);
+    const total = entries.reduce((s, e) => s + (e.finalAmount != null ? e.finalAmount : (e.amount || 0)), 0);
     res.json({
       data: {
         from: start, to: end, total, count: entries.length,
@@ -28,6 +28,8 @@ router.get('/', adminAuth, async (req, res) => {
           customerPhone: e.customerPhone || '',
           serviceName: e.serviceName || '',
           amount: e.amount || 0,
+          discount: e.discount || 0,
+          finalAmount: e.finalAmount != null ? e.finalAmount : (e.amount || 0),
           date: e.date,
           note: e.note || '',
         })),
@@ -38,12 +40,14 @@ router.get('/', adminAuth, async (req, res) => {
 
 router.post('/', adminAuth, async (req, res) => {
   try {
-    const { customerName, customerPhone, serviceName, amount, date, note } = req.body;
+    const { customerName, customerPhone, serviceName, amount, discount, date, note } = req.body;
     if (!customerName || amount == null || amount === '') {
       return res.status(400).json({ message: 'Customer name and amount are required' });
     }
     const when = date ? new Date(`${date}T12:00:00+06:00`) : new Date();
-    const e = await Ledger.create({ customerName, customerPhone, serviceName, amount: Number(amount), date: when, note });
+    const amt = Number(amount);
+    const disc = Number(discount) || 0;
+    const e = await Ledger.create({ customerName, customerPhone, serviceName, amount: amt, discount: disc, finalAmount: Math.max(0, amt - disc), date: when, note });
     res.status(201).json({ data: { id: e._id.toString() } });
   } catch (err) { res.status(400).json({ message: err.message }); }
 });
