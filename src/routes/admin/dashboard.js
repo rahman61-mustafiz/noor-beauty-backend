@@ -45,7 +45,7 @@ router.get('/', adminAuth, async (req, res) => {
       recentBookings: recentBookings.map((b) => ({
         id: b._id.toString(),
         customerName: b.customer?.name || 'Unknown',
-        serviceName:  b.service?.name  || 'Unknown',
+        serviceName:  b.serviceName || b.service?.name || 'Unknown',
         stylistName:  b.staff?.name    || 'Unknown',
         startTime:    b.startTime,
         status:       b.status,

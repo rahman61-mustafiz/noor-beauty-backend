@@ -8,7 +8,7 @@ const bookingSchema = new mongoose.Schema(
     staff:       { type: mongoose.Schema.Types.ObjectId, ref: 'Staff' },
     startTime:   { type: Date, required: true },
     endTime:     { type: Date, required: true },
-    status:      { type: String, enum: ['pending','confirmed','completed','cancelled'], default: 'pending' },
+    status:      { type: String, enum: ['pending','confirmed','completed','cancelled'], default: 'confirmed' },
     notes:       { type: String },
     totalAmount: { type: Number },
   },
