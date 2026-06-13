@@ -32,6 +32,7 @@ app.use('/api/bookings',           require('./routes/bookings'));
 app.use('/api/reviews',            require('./routes/reviews'));
 app.use('/api/gallery',            require('./routes/gallery'));
 app.use('/api/announcement',       require('./routes/announcement'));
+app.use('/api/banner',            require('./routes/banner'));
 app.use('/api/home-images',       require('./routes/homeImages'));
 app.use('/api/home-images',       require('./routes/homeImages'));
 app.use('/api/admin/dashboard',    require('./routes/admin/dashboard'));
@@ -46,6 +47,7 @@ app.use('/api/admin/reports',      require('./routes/admin/reports'));
 app.use('/api/admin/ledger', require('./routes/admin/ledger'));
 app.use('/api/admin/gallery',      require('./routes/admin/gallery'));
 app.use('/api/admin/announcement', require('./routes/admin/announcement'));
+app.use('/api/admin/banner',      require('./routes/admin/banner'));
 app.use('/api/admin/home-images', require('./routes/admin/homeImages'));
 app.use('/api/admin/home-images', require('./routes/admin/homeImages'));
 
