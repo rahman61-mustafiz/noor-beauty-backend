@@ -46,7 +46,7 @@ app.use('/api/admin/reviews',      require('./routes/admin/reviews'));
 app.use('/api/admin/analytics',    require('./routes/admin/analytics'));
 app.use('/api/admin/reports',      require('./routes/admin/reports'));
 app.use('/api/admin/ledger', require('./routes/admin/ledger'));
-app.use('/api/admin/settings',     require('./routes/admin/settings'));
+app.use('/api/admin/settings',     require('./routes/admin/salonsettings'));
 app.use('/api/admin/salon-visits', require('./routes/admin/salonVisits'));
 app.use('/api/admin/salon-reports', require('./routes/admin/salonReports'));
 app.use('/api/admin/gallery',      require('./routes/admin/gallery'));
