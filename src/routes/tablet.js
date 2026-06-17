@@ -8,6 +8,10 @@ const Service       = require('../models/Service');      // READ ONLY here
 const ServiceType   = require('../models/ServiceType');  // READ ONLY here
 const Staff         = require('../models/Staff');         // READ ONLY here
 
+const tabletAuth = require('../middleware/tabletAuth');
+router.use(tabletAuth); // guard all tablet endpoints (enforced once TABLET_KEY is set)
+
+
 const isObjectId = (v) => typeof v === 'string' && /^[0-9a-fA-F]{24}$/.test(v);
 
 // ── GET /api/tablet/customer/:phone ───────────────────────────────────────────
