@@ -52,4 +52,16 @@ router.get('/', adminAuth, async (req, res) => {
   }
 });
 
+// ── DELETE /api/admin/salon-visits/:id ────────────────────────────────────────
+router.delete('/:id', adminAuth, async (req, res) => {
+  try {
+    const deleted = await SalonVisit.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ message: 'Booking not found' });
+    res.json({ data: { id: req.params.id, deleted: true } });
+  } catch (err) {
+    console.error('salon-visit delete error:', err);
+    res.status(500).json({ message: 'Failed to delete booking' });
+  }
+});
+
 module.exports = router;
