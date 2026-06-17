@@ -1,23 +1,20 @@
-const router = require('express').Router();
-const Staff  = require('../models/Staff');
+const mongoose = require('mongoose');
 
-router.get('/', async (req, res) => {
-  try {
-    const staff = await Staff.find({ isActive: true }).sort({ name: 1 }).lean();
-    res.json({ data: staff.map((s) => ({ ...s, id: s._id.toString() })) });
-  } catch (err) {
-    res.status(500).json({ message: 'Failed to load staff' });
-  }
-});
+const staffSchema = new mongoose.Schema(
+  {
+    name:        { type: String, required: true, trim: true },
+    phone:       { type: String },
+    specialty:   { type: [String], default: [] },
+    bio:         { type: String },
+    photoUrl:    { type: String },
+    rating:      { type: Number, default: 0 },
+    salary:      { type: Number, default: 0 },
+    isActive:    { type: Boolean, default: true },
+    workingDays: { type: [String], default: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'] },
+    workStart:   { type: String, default: '10:00' },
+    workEnd:     { type: String, default: '20:00' },
+  },
+  { timestamps: true }
+);
 
-router.get('/:id/availability', async (req, res) => {
-  try {
-    const staff = await Staff.findById(req.params.id).lean();
-    if (!staff) return res.status(404).json({ message: 'Staff not found' });
-    res.json({ workingDays: staff.workingDays, workStart: staff.workStart, workEnd: staff.workEnd });
-  } catch (err) {
-    res.status(500).json({ message: 'Failed to load availability' });
-  }
-});
-
-module.exports = router;
+module.exports = mongoose.model('Staff', staffSchema);
