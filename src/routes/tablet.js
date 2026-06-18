@@ -3,6 +3,7 @@ const router = require('express').Router();
 const SalonVisit    = require('../models/SalonVisit');
 const SalonCustomer = require('../models/SalonCustomer');
 const Settings      = require('../models/Settings');
+const Booking       = require('../models/Booking');      // READ ONLY here
 const User          = require('../models/User');         // READ ONLY here
 const Service       = require('../models/Service');      // READ ONLY here
 const ServiceType   = require('../models/ServiceType');  // READ ONLY here
@@ -13,6 +14,14 @@ router.use(tabletAuth); // guard all tablet endpoints (enforced once TABLET_KEY 
 
 
 const isObjectId = (v) => typeof v === 'string' && /^[0-9a-fA-F]{24}$/.test(v);
+
+// Bangladesh is UTC+6. Mirrors the date logic in src/routes/admin/salonVisits.js.
+const BD  = 6 * 60 * 60 * 1000;
+const pad = (n) => String(n).padStart(2, '0');
+function bdDateStr(d) {
+  const t = new Date(new Date(d).getTime() + BD);
+  return `${t.getUTCFullYear()}-${pad(t.getUTCMonth() + 1)}-${pad(t.getUTCDate())}`;
+}
 
 // ── GET /api/tablet/customer/:phone ───────────────────────────────────────────
 // Recognize a returning customer. Reads the app's `User` collection AND the
@@ -220,6 +229,58 @@ router.post('/visit', async (req, res) => {
   } catch (err) {
     console.error('tablet visit error:', err);
     res.status(500).json({ message: 'Failed to create visit' });
+  }
+});
+
+// ── GET /api/tablet/today-bookings ────────────────────────────────────────────
+// Read-only combined view of TODAY's bookings from both sources:
+//   • walk-in tablet visits (SalonVisit)
+//   • app online appointments (Booking, excluding cancelled)
+// Returns only customer (name + phone), services, and the staff who serve.
+// Never writes to any collection.
+router.get('/today-bookings', async (req, res) => {
+  try {
+    const todayBd = bdDateStr(new Date());
+    const start = new Date(`${todayBd}T00:00:00.000+06:00`);
+    const end   = new Date(`${todayBd}T23:59:59.999+06:00`);
+
+    const [visits, bookings] = await Promise.all([
+      SalonVisit.find({ date: { $gte: start, $lte: end } })
+        .populate('staff', 'name')
+        .lean(),
+      Booking.find({
+        startTime: { $gte: start, $lte: end },
+        status: { $ne: 'cancelled' },
+      })
+        .populate('customer', 'name phone')
+        .populate('staff', 'name')
+        .lean(),
+    ]);
+
+    const walkinRows = visits.map((v) => ({
+      name: v.customerName,
+      phone: v.customerPhone || '',
+      services: (v.items || []).map((i) => i.name),
+      staff: (v.staff || []).map((s) => s.name).filter(Boolean),
+      _t: v.date ? new Date(v.date).getTime() : 0,
+    }));
+
+    const appRows = bookings.map((b) => ({
+      name: b.customer?.name || 'Guest',
+      phone: b.customer?.phone || '',
+      services: [b.serviceName].filter(Boolean),
+      staff: (b.staff ? [b.staff.name] : []).filter(Boolean),
+      _t: b.startTime ? new Date(b.startTime).getTime() : 0,
+    }));
+
+    const bookings_ = [...walkinRows, ...appRows]
+      .sort((a, b) => b._t - a._t)
+      .map(({ _t, ...row }) => row); // drop internal sort key
+
+    res.json({ data: { count: bookings_.length, bookings: bookings_ } });
+  } catch (err) {
+    console.error('tablet today-bookings error:', err);
+    res.status(500).json({ message: 'Failed to load today\'s bookings' });
   }
 });
 
