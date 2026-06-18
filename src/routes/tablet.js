@@ -322,4 +322,78 @@ router.get('/customer-suggest', async (req, res) => {
   }
 });
 
+// ── GET /api/tablet/customer-search?q=<name or digits> ────────────────────────
+// Search imported/walk-in contacts (SalonCustomer ONLY) by name or phone prefix,
+// for the in-tablet "edit customer" screen. App `User` accounts are intentionally
+// excluded — the tablet must never edit the customer app's records. Read-only.
+const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+router.get('/customer-search', async (req, res) => {
+  try {
+    const q = String(req.query.q || '').trim();
+    if (q.length < 2) return res.json({ data: { customers: [] } });
+
+    const or = [{ name: new RegExp(escapeRegex(q), 'i') }];
+    let digits = q.replace(/\D/g, '');
+    if (digits.length >= 2) {
+      if (digits.startsWith('880')) digits = digits.slice(3);
+      else if (digits.startsWith('0')) digits = digits.slice(1);
+      if (digits) or.push({ phone: new RegExp('^\\+880' + digits) });
+    }
+
+    const found = await SalonCustomer.find({ $or: or })
+      .select('name phone')
+      .sort({ name: 1 })
+      .limit(25)
+      .lean();
+
+    res.json({
+      data: {
+        customers: found.map((c) => ({ id: c._id.toString(), name: c.name, phone: c.phone })),
+      },
+    });
+  } catch (err) {
+    console.error('tablet customer-search error:', err);
+    res.status(500).json({ message: 'Search failed' });
+  }
+});
+
+// ── PUT /api/tablet/customer/:id ──────────────────────────────────────────────
+// Edit a walk-in/imported contact's name and/or phone (SalonCustomer ONLY).
+// Phone is normalized and checked for uniqueness within SalonCustomer.
+router.put('/customer/:id', async (req, res) => {
+  try {
+    const { name, phone } = req.body;
+    const update = {};
+
+    if (name != null) {
+      const n = String(name).trim();
+      if (!n) return res.status(400).json({ message: 'Name cannot be empty' });
+      update.name = n;
+    }
+
+    if (phone != null) {
+      const norm = SalonCustomer.normalizePhone(String(phone));
+      if (!/^\+8801\d{9}$/.test(norm)) {
+        return res.status(400).json({ message: 'Enter a valid Bangladeshi phone number' });
+      }
+      const clash = await SalonCustomer.findOne({ phone: norm, _id: { $ne: req.params.id } }).lean();
+      if (clash) return res.status(409).json({ message: 'Another customer already has this phone number' });
+      update.phone = norm;
+    }
+
+    if (Object.keys(update).length === 0) {
+      return res.status(400).json({ message: 'Nothing to update' });
+    }
+
+    const updated = await SalonCustomer.findByIdAndUpdate(req.params.id, update, { new: true }).lean();
+    if (!updated) return res.status(404).json({ message: 'Customer not found' });
+
+    res.json({ data: { id: updated._id.toString(), name: updated.name, phone: updated.phone } });
+  } catch (err) {
+    console.error('tablet customer update error:', err);
+    res.status(500).json({ message: 'Update failed' });
+  }
+});
+
 module.exports = router;
