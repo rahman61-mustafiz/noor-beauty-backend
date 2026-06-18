@@ -284,4 +284,42 @@ router.get('/today-bookings', async (req, res) => {
   }
 });
 
+// ── GET /api/tablet/customer-suggest?q=<digits> ───────────────────────────────
+// Type-ahead suggestions while entering a phone number. Matches by phone PREFIX
+// across walk-in contacts (SalonCustomer) and app customers (User). Read-only.
+// Requires at least 4 typed digits; returns a small capped list.
+router.get('/customer-suggest', async (req, res) => {
+  try {
+    let d = String(req.query.q || '').replace(/\D/g, '');
+    if (d.length < 4) return res.json({ data: { suggestions: [] } });
+
+    // Stored phones are E.164 (+880XXXXXXXXXX). Convert the typed digits to the
+    // national part so a prefix match lines up regardless of how staff type it.
+    if (d.startsWith('880')) d = d.slice(3);
+    else if (d.startsWith('0')) d = d.slice(1);
+    if (!d) return res.json({ data: { suggestions: [] } });
+
+    const re = new RegExp('^\\+880' + d); // d is digits-only, safe in a regex
+
+    const [walkins, appUsers] = await Promise.all([
+      SalonCustomer.find({ phone: re }).select('name phone').limit(10).lean(),
+      User.find({ phone: re }).select('name phone').limit(10).lean(),
+    ]);
+
+    // Merge, de-dupe by phone (walk-in record wins if both exist), cap at 8.
+    const byPhone = new Map();
+    for (const u of appUsers) byPhone.set(u.phone, { name: u.name || '', phone: u.phone });
+    for (const w of walkins) byPhone.set(w.phone, { name: w.name || '', phone: w.phone });
+
+    const suggestions = [...byPhone.values()]
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .slice(0, 8);
+
+    res.json({ data: { suggestions } });
+  } catch (err) {
+    console.error('tablet customer-suggest error:', err);
+    res.status(500).json({ message: 'Suggest failed' });
+  }
+});
+
 module.exports = router;

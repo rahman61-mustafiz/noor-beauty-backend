@@ -6,3 +6,6 @@ npm-debug.log*
 dist/
 build/
 .DS_Store
+
+# Imported customer contacts (PII) — generated locally, never commit
+scripts/imported_contacts.json
