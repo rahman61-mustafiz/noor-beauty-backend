@@ -277,7 +277,12 @@ router.get('/today-bookings', async (req, res) => {
       .sort((a, b) => b._t - a._t)
       .map(({ _t, ...row }) => row); // drop internal sort key
 
-    res.json({ data: { count: bookings_.length, bookings: bookings_ } });
+    // Today's total income: walk-in payments + app appointment amounts.
+    const walkinRevenue = visits.reduce((sum, v) => sum + (Number(v.finalAmount) || 0), 0);
+    const appRevenue    = bookings.reduce((sum, b) => sum + (Number(b.totalAmount) || 0), 0);
+    const revenue = walkinRevenue + appRevenue;
+
+    res.json({ data: { count: bookings_.length, revenue, bookings: bookings_ } });
   } catch (err) {
     console.error('tablet today-bookings error:', err);
     res.status(500).json({ message: 'Failed to load today\'s bookings' });
