@@ -277,10 +277,13 @@ router.get('/today-bookings', async (req, res) => {
       .sort((a, b) => b._t - a._t)
       .map(({ _t, ...row }) => row); // drop internal sort key
 
-    // Today's total income: walk-in payments + app appointment amounts.
-    const walkinRevenue = visits.reduce((sum, v) => sum + (Number(v.finalAmount) || 0), 0);
-    const appRevenue    = bookings.reduce((sum, b) => sum + (Number(b.totalAmount) || 0), 0);
-    const revenue = walkinRevenue + appRevenue;
+    // Today's CASH income only: walk-in visits paid in cash. bKash/card are
+    // excluded, and app bookings (no payment method recorded) never count.
+    // The admin/SaaS panel accounting is unaffected — this figure is tablet-only.
+    const revenue = visits.reduce(
+      (sum, v) => sum + (v.paymentMethod === 'cash' ? (Number(v.finalAmount) || 0) : 0),
+      0,
+    );
 
     res.json({ data: { count: bookings_.length, revenue, bookings: bookings_ } });
   } catch (err) {
