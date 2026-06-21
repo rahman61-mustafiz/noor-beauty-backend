@@ -11,6 +11,17 @@ const lineItemSchema = new mongoose.Schema(
   { _id: false }
 );
 
+// A single visit's payment can be split across methods (e.g. part cash, part
+// bkash, part card). Amounts sum to finalAmount.
+const paymentSplitSchema = new mongoose.Schema(
+  {
+    cash:  { type: Number, default: 0 },
+    bkash: { type: Number, default: 0 },
+    card:  { type: Number, default: 0 },
+  },
+  { _id: false }
+);
+
 const salonVisitSchema = new mongoose.Schema(
   {
     // Customer info is denormalized so a visit is self-contained.
@@ -29,6 +40,9 @@ const salonVisitSchema = new mongoose.Schema(
     discountAmount:  { type: Number, default: 0 },
     finalAmount:     { type: Number, required: true, default: 0 },
 
+    // Split payment breakdown (cash + bkash + card === finalAmount).
+    payments:        { type: paymentSplitSchema, default: () => ({ cash: 0, bkash: 0, card: 0 }) },
+    // Kept for backward compatibility / legacy displays: the dominant method.
     paymentMethod:   { type: String, enum: ['cash', 'bkash', 'card'], default: 'cash' },
     source:          { type: String, default: 'tablet' },
     date:            { type: Date, default: Date.now },

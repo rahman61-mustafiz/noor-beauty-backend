@@ -149,7 +149,7 @@ router.post('/visit', async (req, res) => {
       customerPhone, customerName,
       items = [], staffIds = [],
       discountPercent, discountAmount,
-      paymentMethod = 'cash', note,
+      payments, paymentMethod = 'cash', note,
     } = req.body;
 
     if (!customerName) {
@@ -181,6 +181,33 @@ router.post('/visit', async (req, res) => {
     const discPct = subtotal > 0 ? Math.round((discAmt / subtotal) * 100) : 0;
     const finalAmount = Math.max(0, subtotal - discAmt);
 
+    // Build the payment split. New clients send `payments` {cash,bkash,card};
+    // older clients send only `paymentMethod` (whole amount on one method).
+    let split;
+    if (payments && typeof payments === 'object') {
+      split = {
+        cash:  Math.max(0, Number(payments.cash)  || 0),
+        bkash: Math.max(0, Number(payments.bkash) || 0),
+        card:  Math.max(0, Number(payments.card)  || 0),
+      };
+    } else {
+      const m = ['cash', 'bkash', 'card'].includes(paymentMethod) ? paymentMethod : 'cash';
+      split = { cash: 0, bkash: 0, card: 0 };
+      split[m] = finalAmount;
+    }
+
+    // The split must add up to the bill (tolerate ±1 for rounding).
+    const splitTotal = split.cash + split.bkash + split.card;
+    if (Math.abs(splitTotal - finalAmount) > 1) {
+      return res.status(400).json({
+        message: `Payment split (৳${splitTotal}) must equal the total payable (৳${finalAmount})`,
+      });
+    }
+
+    // Dominant method kept for backward-compatible legacy displays.
+    const dominantMethod = ['cash', 'bkash', 'card']
+      .reduce((best, m) => (split[m] > split[best] ? m : best), 'cash');
+
     // Decide customer source by reading `User` (no writes to it)
     const phone = customerPhone ? User.normalizePhone(customerPhone) : '';
     let customerSource = 'walkin';
@@ -199,7 +226,8 @@ router.post('/visit', async (req, res) => {
       discountPercent: discPct,
       discountAmount: discAmt,
       finalAmount,
-      paymentMethod,
+      payments: split,
+      paymentMethod: dominantMethod,
       note,
     });
 
@@ -223,7 +251,8 @@ router.post('/visit', async (req, res) => {
         discountPercent: discPct,
         discountAmount: discAmt,
         finalAmount,
-        paymentMethod,
+        payments: split,
+        paymentMethod: dominantMethod,
       },
     });
   } catch (err) {
@@ -277,13 +306,15 @@ router.get('/today-bookings', async (req, res) => {
       .sort((a, b) => b._t - a._t)
       .map(({ _t, ...row }) => row); // drop internal sort key
 
-    // Today's CASH income only: walk-in visits paid in cash. bKash/card are
-    // excluded, and app bookings (no payment method recorded) never count.
-    // The admin/SaaS panel accounting is unaffected — this figure is tablet-only.
-    const revenue = visits.reduce(
-      (sum, v) => sum + (v.paymentMethod === 'cash' ? (Number(v.finalAmount) || 0) : 0),
-      0,
-    );
+    // Today's CASH income only: the cash portion of each walk-in's payment
+    // split. bKash/card excluded; app bookings never count. Legacy visits (no
+    // split stored) fall back to the old single paymentMethod. Tablet-only.
+    const revenue = visits.reduce((sum, v) => {
+      const cash = v.payments
+        ? (Number(v.payments.cash) || 0)
+        : (v.paymentMethod === 'cash' ? (Number(v.finalAmount) || 0) : 0);
+      return sum + cash;
+    }, 0);
 
     res.json({ data: { count: bookings_.length, revenue, bookings: bookings_ } });
   } catch (err) {

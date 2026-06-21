@@ -46,7 +46,15 @@ router.get('/dashboard', adminAuth, async (req, res) => {
 
     const payment = { cash: 0, bkash: 0, card: 0 };
     visits.forEach((v) => {
-      if (payment[v.paymentMethod] != null) payment[v.paymentMethod] += v.finalAmount || 0;
+      if (v.payments) {
+        // Split payment: attribute each method its own amount.
+        payment.cash  += v.payments.cash  || 0;
+        payment.bkash += v.payments.bkash || 0;
+        payment.card  += v.payments.card  || 0;
+      } else if (payment[v.paymentMethod] != null) {
+        // Legacy visit: whole amount on the single recorded method.
+        payment[v.paymentMethod] += v.finalAmount || 0;
+      }
     });
 
     const custSet = new Set();
