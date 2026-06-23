@@ -3,7 +3,7 @@ const router = require('express').Router();
 const SalonVisit    = require('../models/SalonVisit');
 const SalonCustomer = require('../models/SalonCustomer');
 const Settings      = require('../models/Settings');
-const Booking       = require('../models/Booking');      // READ ONLY here
+const Booking       = require('../models/Booking');      // read + status-cancel only
 const User          = require('../models/User');         // READ ONLY here
 const Service       = require('../models/Service');      // READ ONLY here
 const ServiceType   = require('../models/ServiceType');  // READ ONLY here
@@ -287,6 +287,9 @@ router.get('/today-bookings', async (req, res) => {
     ]);
 
     const walkinRows = visits.map((v) => ({
+      id: v._id.toString(),
+      source: 'walkin',          // billing record — not cancellable from the tablet
+      status: 'done',
       name: v.customerName,
       phone: v.customerPhone || '',
       services: (v.items || []).map((i) => i.name),
@@ -295,6 +298,9 @@ router.get('/today-bookings', async (req, res) => {
     }));
 
     const appRows = bookings.map((b) => ({
+      id: b._id.toString(),
+      source: 'app',             // online appointment — cancellable via /booking/:id/cancel
+      status: b.status,
       name: b.customer?.name || 'Guest',
       phone: b.customer?.phone || '',
       services: [b.serviceName].filter(Boolean),
@@ -320,6 +326,38 @@ router.get('/today-bookings', async (req, res) => {
   } catch (err) {
     console.error('tablet today-bookings error:', err);
     res.status(500).json({ message: 'Failed to load today\'s bookings' });
+  }
+});
+
+// ── PATCH /api/tablet/booking/:id/cancel ──────────────────────────────────────
+// Cancel an app online appointment (Booking) from the salon tablet by setting
+// its status to 'cancelled', so it drops out of today-bookings. Only the
+// Booking's status is changed — nothing else is touched. Walk-in visits
+// (SalonVisit) are billing records and are NOT cancellable here.
+router.patch('/booking/:id/cancel', async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!isObjectId(id)) {
+      return res.status(400).json({ message: 'Invalid booking id' });
+    }
+
+    const booking = await Booking.findById(id);
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    // Already cancelled — idempotent success, no write needed.
+    if (booking.status === 'cancelled') {
+      return res.json({ data: { id: booking._id.toString(), status: 'cancelled' } });
+    }
+
+    booking.status = 'cancelled';
+    await booking.save();
+
+    res.json({ data: { id: booking._id.toString(), status: booking.status } });
+  } catch (err) {
+    console.error('tablet booking cancel error:', err);
+    res.status(500).json({ message: 'Failed to cancel booking' });
   }
 });
 
