@@ -357,6 +357,46 @@ router.post('/change-password', authMiddleware, async (req, res) => {
   }
 });
 
+// ── PUT /api/auth/profile ─────────────────────────────────────────────────────
+// Update the signed-in user's display name (and optional email). The app calls
+// this right after the user enters their name; without it the name was never
+// stored server-side, so users stayed 'Guest' everywhere (reviews, bookings).
+router.put('/profile', authMiddleware, async (req, res) => {
+  try {
+    const { name, email } = req.body;
+    const update = {};
+
+    if (name !== undefined) {
+      const n = String(name).trim();
+      if (n.length < 2) {
+        return res.status(400).json({ message: 'Name must be at least 2 characters' });
+      }
+      update.name = n;
+    }
+    if (email !== undefined) {
+      update.email = String(email).trim() || null;
+    }
+    if (Object.keys(update).length === 0) {
+      return res.status(400).json({ message: 'Nothing to update' });
+    }
+
+    const user = await User.findByIdAndUpdate(req.userId, update, { new: true }).lean();
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.json({
+      data: {
+        id: user._id.toString(),
+        name: user.name,
+        phone: user.phone,
+        email: user.email || null,
+      },
+    });
+  } catch (err) {
+    console.error('update-profile error:', err);
+    res.status(500).json({ message: 'Failed to update profile' });
+  }
+});
+
 // DELETE /api/auth/account - permanently delete account + all user data
 router.delete('/account', authMiddleware, async (req, res) => {
   try {
