@@ -473,4 +473,33 @@ router.put('/customer/:id', async (req, res) => {
   }
 });
 
+// ── GET /api/tablet/today-sales ───────────────────────────────────────────────
+// Read-only TOTAL sales for today (BD/UTC+6): SalonVisit.finalAmount +
+// Booking.totalAmount (confirmed/completed). Mirrors the `totalRevenue` from
+// /api/admin/salon-reports/dashboard, but behind the tablet key (no admin/MFA).
+router.get('/today-sales', async (req, res) => {
+  try {
+    const todayBd = bdDateStr(new Date());
+    const start = new Date(`${todayBd}T00:00:00.000+06:00`);
+    const end   = new Date(`${todayBd}T23:59:59.999+06:00`);
+
+    const [visits, bookings] = await Promise.all([
+      SalonVisit.find({ date: { $gte: start, $lte: end } }).select('finalAmount').lean(),
+      Booking.find({
+        status: { $in: ['confirmed', 'completed'] },
+        startTime: { $gte: start, $lte: end },
+      }).select('totalAmount').lean(),
+    ]);
+
+    const visitRevenue   = visits.reduce((s, v) => s + (Number(v.finalAmount) || 0), 0);
+    const bookingRevenue = bookings.reduce((s, b) => s + (Number(b.totalAmount) || 0), 0);
+    const totalSales = visitRevenue + bookingRevenue;
+
+    res.json({ date: todayBd, totalSales });
+  } catch (err) {
+    console.error('tablet today-sales error:', err);
+    res.status(500).json({ message: 'Failed to load today\'s sales' });
+  }
+});
+
 module.exports = router;
