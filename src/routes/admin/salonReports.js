@@ -9,6 +9,9 @@ function bdDateStr(d) {
   const t = new Date(new Date(d).getTime() + BD);
   return `${t.getUTCFullYear()}-${pad(t.getUTCMonth() + 1)}-${pad(t.getUTCDate())}`;
 }
+// Display helper: "Eyebrow Threading" or "Eyebrow Threading ×3" for quantity > 1.
+const displayName = (i) => (i.quantity > 1 ? `${i.name} ×${i.quantity}` : i.name);
+
 function rangeFromQuery(q) {
   const todayBd = bdDateStr(new Date());
   const fromStr = q.from || todayBd;
@@ -40,7 +43,7 @@ router.get('/dashboard', adminAuth, async (req, res) => {
     const bookingRevenue = bookings.reduce((s, b) => s + (b.totalAmount || 0), 0);
     const totalRevenue   = visitRevenue + bookingRevenue;
 
-    const servicesDone  = visits.reduce((s, v) => s + (v.items ? v.items.length : 0), 0);
+    const servicesDone  = visits.reduce((s, v) => s + (v.items || []).reduce((qs, i) => qs + (i.quantity || 1), 0), 0);
     const discountTotal = visits.reduce((s, v) => s + (v.discountAmount || 0), 0);
     const discountCount = visits.filter((v) => (v.discountAmount || 0) > 0).length;
 
@@ -94,7 +97,7 @@ router.get('/dashboard', adminAuth, async (req, res) => {
         todaysCustomers: visits.map((v) => ({
           name: v.customerName,
           phone: v.customerPhone || '',
-          services: (v.items || []).map((i) => i.name),
+          services: (v.items || []).map(displayName),
           finalAmount: v.finalAmount,
           paymentMethod: v.paymentMethod,
           source: v.customerSource,
@@ -142,7 +145,7 @@ router.get('/sales', adminAuth, async (req, res) => {
     }
 
     visits.forEach((v) => {
-      const svcNames = (v.items || []).map((i) => i.name).join(', ') || 'Service';
+      const svcNames = (v.items || []).map(displayName).join(', ') || 'Service';
       addRow(v.finalAmount, v.date, v.customerName, v.customerPhone, svcNames, 'tablet', v.paymentMethod);
     });
     bookings.forEach((b) => {

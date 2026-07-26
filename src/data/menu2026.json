@@ -1,0 +1,562 @@
+[
+  {
+    "slug": "hair-cutting",
+    "title": "Hair Cutting",
+    "subtitle": null,
+    "note": null,
+    "kind": "simple",
+    "sort_order": 1,
+    "items": [
+      { "name": "U Cut", "price": 300, "note": null },
+      { "name": "V Cut", "price": 300, "note": null },
+      { "name": "Straight Cut", "price": 300, "note": null },
+      { "name": "Front Layer", "price": 400, "note": null },
+      { "name": "Blank Cut", "price": 500, "note": null },
+      { "name": "Boy Cut", "price": 500, "note": null },
+      { "name": "Face Framing Layer", "price": 600, "note": null },
+      { "name": "Trimming", "price": 600, "note": null },
+      { "name": "Diana Cut", "price": 600, "note": null },
+      { "name": "Bob Cut", "price": 600, "note": null },
+      { "name": "Blanks", "price": 600, "note": null },
+      { "name": "Tweak Cut", "price": 600, "note": null },
+      { "name": "Feather Cut", "price": 800, "note": null },
+      { "name": "Full Layer", "price": 800, "note": null },
+      { "name": "Step Cut", "price": 800, "note": null },
+      { "name": "Farah Cut", "price": 800, "note": null },
+      { "name": "Thai Bob Cut", "price": 800, "note": null },
+      { "name": "Emo Cut", "price": 800, "note": null },
+      { "name": "Full Hair Spild Machine", "price": 800, "note": null },
+      { "name": "Butterfly Cut", "price": 1000, "note": null },
+      { "name": "Volume Layer", "price": 1000, "note": null },
+      { "name": "Razor Cut", "price": 1000, "note": null },
+      { "name": "Square Layer", "price": 1000, "note": null },
+      { "name": "Full Hair Spild Hand", "price": 1200, "note": null }
+    ]
+  },
+  {
+    "slug": "hair-color",
+    "title": "Hair Color",
+    "subtitle": null,
+    "note": "For previously colored hair, extra charge applicable.",
+    "kind": "tiered",
+    "tier_labels": ["Regular Product", "Premium Product"],
+    "sort_order": 2,
+    "items": [
+      { "name": "Stick", "prices": [300, 500], "note": null },
+      { "name": "Funky Color Stick", "prices": [1000, 2000], "note": null },
+      { "name": "Root Touch", "prices": [3000, 3000], "note": null },
+      { "name": "Global", "prices": [4000, 7000], "note": null },
+      { "name": "Cap Stick", "prices": [6000, 9000], "note": null },
+      { "name": "Cap Stick with Base", "prices": [8000, 12000], "note": null },
+      { "name": "Ombre", "prices": [8000, 15000], "note": null },
+      { "name": "Highlight", "prices": [10000, 12000], "note": null },
+      { "name": "Balayege", "prices": [12000, 15000], "note": null },
+      { "name": "Baby Lights", "prices": [12000, 15000], "note": null },
+      { "name": "Folyege", "prices": [14000, 18000], "note": null },
+      { "name": "Highlights with Base", "prices": [16000, 19000], "note": null },
+      { "name": "Baby Lights with Base", "prices": [16000, 19000], "note": null }
+    ]
+  },
+  {
+    "slug": "facial",
+    "title": "Facial",
+    "subtitle": null,
+    "note": null,
+    "kind": "simple",
+    "sort_order": 3,
+    "items": [
+      { "name": "Deep Purifying Facial", "price": 1000, "note": null },
+      { "name": "Fruit Facial", "price": 1500, "note": null },
+      { "name": "Whitening Facial", "price": 2000, "note": null },
+      { "name": "Vitamin-C Facial", "price": 2000, "note": null },
+      { "name": "D-Tan Facial", "price": 2000, "note": null },
+      { "name": "Bright & Shine Facial", "price": 2000, "note": null },
+      { "name": "Facial with Glow Boost Pack", "price": 2000, "note": null },
+      { "name": "Ayurvedic Facial", "price": 2000, "note": null },
+      { "name": "Red Rose Facial", "price": 2000, "note": null },
+      { "name": "Pink Glossy Facial", "price": 2000, "note": null },
+      { "name": "Hydro Jelly Facial", "price": 2500, "note": null },
+      { "name": "Lavender Extract Facial", "price": 2500, "note": null },
+      { "name": "24 Caret Foil Gold Facial", "price": 2500, "note": null },
+      { "name": "Diamond Silk Facial", "price": 2500, "note": null },
+      { "name": "Elegant Pearl Facial", "price": 2500, "note": null },
+      { "name": "Clarify Ozone Facial", "price": 2500, "note": null },
+      { "name": "Clove Acne Facial", "price": 2500, "note": null },
+      { "name": "Therma Herb Facial", "price": 3000, "note": null },
+      { "name": "Blue Lotus Facial with Ice", "price": 3000, "note": null },
+      { "name": "Vampire / Skin Revamp Facial", "price": 3000, "note": null },
+      { "name": "Collagen Facial", "price": 3000, "note": null },
+      { "name": "Retirant Retinol Facial", "price": 3000, "note": null },
+      { "name": "Black Diamond Facial", "price": 3000, "note": null },
+      { "name": "Hydra Facial", "price": 3000, "note": null },
+      { "name": "Face Lifting Facial", "price": 3500, "note": null },
+      { "name": "Oxygen Facial", "price": 3500, "note": null },
+      { "name": "Wine Facial", "price": 3500, "note": null },
+      { "name": "Bio Hydra Facial", "price": 3500, "note": null },
+      { "name": "Cupping Facial", "price": 4000, "note": null },
+      { "name": "Ice-Crystal Facial", "price": 4000, "note": null },
+      { "name": "Velvet Glam Facial", "price": 4000, "note": null },
+      { "name": "Hydra Boost Facial", "price": 4500, "note": null },
+      { "name": "Skin Peel-off Facial", "price": 4500, "note": null },
+      { "name": "Detox Facial", "price": 5000, "note": null },
+      { "name": "Advance Bio-Hydra Facial", "price": 5000, "note": null },
+      { "name": "Korean Glass Skin Facial", "price": 5000, "note": null }
+    ]
+  },
+  {
+    "slug": "body-spa",
+    "title": "Body Spa",
+    "subtitle": null,
+    "note": null,
+    "kind": "simple",
+    "sort_order": 4,
+    "items": [
+      { "name": "Classic Body Spa", "price": 4000, "note": null },
+      { "name": "Classic Oil Body Spa", "price": 5000, "note": null },
+      { "name": "Hot Stone with Oil Body Spa", "price": 6000, "note": null },
+      { "name": "Relax & Rejuvenate Spa", "price": 8000, "note": null },
+      { "name": "Noor Signature Body Spa", "price": 10000, "note": null }
+    ]
+  },
+  {
+    "slug": "eye-lash",
+    "title": "Eye Lash",
+    "subtitle": null,
+    "note": null,
+    "kind": "simple",
+    "sort_order": 5,
+    "items": [
+      { "name": "Classic Eye Lash", "price": 3000, "note": null },
+      { "name": "Lash Lifting", "price": 3000, "note": null },
+      { "name": "Cat Eye", "price": 3500, "note": null },
+      { "name": "Doll Eye Lash", "price": 3500, "note": null },
+      { "name": "Wispy Eye", "price": 4000, "note": null },
+      { "name": "Foksy Eye Lash", "price": 4000, "note": null },
+      { "name": "Hybrid Eye Lash", "price": 4200, "note": null },
+      { "name": "Mega Volume", "price": 5000, "note": null }
+    ]
+  },
+  {
+    "slug": "add-on-makeover",
+    "title": "Add-on Makeover",
+    "subtitle": null,
+    "note": null,
+    "kind": "tiered",
+    "tier_labels": ["Regular", "Add-on"],
+    "sort_order": 6,
+    "items": [
+      { "name": "Sharee Drapping", "prices": [300, 500], "note": null },
+      { "name": "Hizab Set", "prices": [300, 500], "note": null },
+      { "name": "Lash Set", "prices": [300, 500], "note": null },
+      { "name": "Dupatta Set", "prices": [300, 500], "note": null },
+      { "name": "Lens Set", "prices": [300, 300], "note": null },
+      { "name": "Fake Nail Set", "prices": [300, 300], "note": null },
+      { "name": "Face Makeup", "prices": [2000, 2500], "note": null }
+    ]
+  },
+  {
+    "slug": "bridal-packages",
+    "title": "Bridal Packages",
+    "subtitle": null,
+    "note": null,
+    "kind": "packages",
+    "sort_order": 7,
+    "packages": [
+      {
+        "name": "Bridal Package 1",
+        "occasion": "Engagement / Akhd Look",
+        "price": 8000,
+        "regular_price": null,
+        "includes": ["Eye Look", "Full Face Makeup (Matte)", "Basic Hair Style", "Jewelry Setting", "Dopatta/Hijab Setting"]
+      },
+      {
+        "name": "Bridal Package 2",
+        "occasion": "Engagement / Akhd Look",
+        "price": 15000,
+        "regular_price": null,
+        "includes": ["Double Cleansing Facial (Free)", "Neck Massage (Free)", "Glowy or Dewy Base Makeup (High End Products with colorful eye)", "Hand & Neck Makeup (Free)", "Dopatta/Hijab Setting/Sharee Draping/Lehenga Setting", "Hair Setting (Basic or Modern Style)"]
+      },
+      {
+        "name": "Bridal Package 3",
+        "occasion": "Wedding / Reception",
+        "price": 20000,
+        "regular_price": null,
+        "includes": ["Bridal Gold Facial (Free)", "Hand Massage with Brightening Cream (Free)", "Full Face Makeup & Trendy Eye Look with High End Products", "Hand & Neck Makeup", "Dopatta/Hijab Setting/Sharee Draping/Lehenga Setting", "Nail Extension with Nail Paint", "Customized Hair Style"]
+      },
+      {
+        "name": "Bridal Package 4",
+        "occasion": "Wedding / Reception",
+        "price": 25000,
+        "regular_price": null,
+        "includes": ["Red Rose Whitening Facial with Cherry Mask (Free)", "Eyebrow / Upper Lip Clean (Free)", "Pakistani Inspired Makeup with Kashee's Products", "Pakistani Glittering Eye Look", "Dopatta/Hijab Setting/Sharee Draping/Lehenga Setting", "Jewelry Setting & Hand Makeup", "Customized Hair Style with Extension"]
+      },
+      {
+        "name": "Bridal Package 5",
+        "occasion": "Wedding / Reception",
+        "price": 30000,
+        "regular_price": null,
+        "includes": ["Korean Glass Skin Facial (Vitamin-C Mask) / Sakura Mask (Free)", "Bridal Whitening Pedicure & Manicure (Free)", "Any Customized Makeup Look with High End Products", "Dopatta/Hijab Setting/Sharee Draping/Lehenga Setting", "Customized Hair Style with Extension", "Hand & Neck Makeup", "Nail Extension & Volume Eye Lash"]
+      }
+    ]
+  },
+  {
+    "slug": "hair-setting",
+    "title": "Hair Setting",
+    "subtitle": null,
+    "note": null,
+    "kind": "tiered",
+    "tier_labels": ["Short", "Medium", "Long"],
+    "sort_order": 8,
+    "items": [
+      { "name": "Hair Ornaments", "prices": [500, 500, 500], "note": null },
+      { "name": "Front Setting", "prices": [600, 600, 600], "note": null },
+      { "name": "Normal Bun", "prices": [800, 800, 800], "note": null },
+      { "name": "Hair Flower", "prices": [1000, 1000, 1000], "note": null },
+      { "name": "Messy Bun", "prices": [1200, 1200, 1200], "note": null },
+      { "name": "Front Braid", "prices": [1500, 1500, 1500], "note": null },
+      { "name": "Pincer Braid", "prices": [1500, 1500, 1500], "note": null },
+      { "name": "Ringless", "prices": [1500, 1500, 1500], "note": null },
+      { "name": "Ring Braid", "prices": [1500, 1500, 1500], "note": null },
+      { "name": "Side Bun", "prices": [1500, 1500, 1500], "note": null },
+      { "name": "Hair Iron", "prices": [2000, 2000, 2000], "note": null },
+      { "name": "Blow Dry", "prices": [2000, 2000, 2000], "note": null },
+      { "name": "Hair Curl", "prices": [2000, 3000, 4000], "note": null },
+      { "name": "Hair Wave", "prices": [2000, 3000, 4000], "note": null },
+      { "name": "Flower Bun", "prices": [2000, 2000, 2000], "note": null },
+      { "name": "Sleek Bun", "prices": [2000, 2000, 2000], "note": null },
+      { "name": "Pearl Bun", "prices": [2000, 2000, 2000], "note": null },
+      { "name": "Braid Bun", "prices": [2000, 2000, 2000], "note": null },
+      { "name": "Any Bun with Flower", "prices": [3000, 3000, 3000], "note": null }
+    ]
+  },
+  {
+    "slug": "hair-treatment",
+    "title": "Hair Treatment",
+    "subtitle": null,
+    "note": null,
+    "kind": "tiered",
+    "tier_labels": ["Short", "Medium", "Long"],
+    "sort_order": 9,
+    "items": [
+      { "name": "Hair Wash", "prices": [200, 350, 500], "note": null },
+      { "name": "Hot Oil Massage", "prices": [500, 500, 500], "note": null },
+      { "name": "Ginger Treatment", "prices": [1500, 2500, 3500], "note": null },
+      { "name": "Onion Treatment", "prices": [1500, 2500, 4000], "note": null },
+      { "name": "Smoothing Spa", "prices": [1500, 2000, 3000], "note": null },
+      { "name": "Organic Protein Treatment", "prices": [2000, 3000, 4000], "note": null },
+      { "name": "Keratin Spa Treatment", "prices": [2000, 3000, 4000], "note": null },
+      { "name": "Bond Repair", "prices": [2000, 3000, 4000], "note": null },
+      { "name": "Nano Treatment", "prices": [2000, 3500, 5000], "note": null },
+      { "name": "Anti Hair Fall Treatment", "prices": [2500, 4000, 6000], "note": null },
+      { "name": "Ozone Treatment", "prices": [2500, 5000, 7000], "note": null },
+      { "name": "Ampule Treatment", "prices": [2500, 3000, 3500], "note": null },
+      { "name": "Korean Hair Smoothing", "prices": [3500, 4000, 5000], "note": null },
+      { "name": "Premium Arabian Treatment", "prices": [4000, 6000, 8000], "note": null },
+      { "name": "Detox Treatment", "prices": [4000, 4000, 4000], "note": null },
+      { "name": "Hair Glossing Treatment", "prices": [5000, 5000, 5000], "note": null },
+      { "name": "Brazilian Spa Treatment", "prices": [5000, 7500, 10000], "note": null },
+      { "name": "Scalp Reduction", "prices": [5000, 5500, 6000], "note": null },
+      { "name": "Premium Turkish Treatment", "prices": [6000, 8000, 10000], "note": null }
+    ]
+  },
+  {
+    "slug": "happy-hour-package",
+    "title": "Happy Hour Package",
+    "subtitle": null,
+    "note": null,
+    "kind": "packages",
+    "sort_order": 10,
+    "packages": [
+      {
+        "name": "Happy Hour Package 1",
+        "occasion": null,
+        "price": 3000,
+        "regular_price": 4000,
+        "includes": ["Classic Pedicure & Manicure", "Fruit Facial", "Oil Massage", "Shampoo (Any Length) with Smoothing Spa"]
+      },
+      {
+        "name": "Happy Hour Package 2",
+        "occasion": null,
+        "price": 4000,
+        "regular_price": 5000,
+        "includes": ["Full Hand Waxing", "Full Leg Waxing", "Double Cleansing Facial", "Oil Massage", "Shampoo (Any Length)", "Massage Pedi/Mani"]
+      },
+      {
+        "name": "Happy Hour Package 3",
+        "occasion": null,
+        "price": 5000,
+        "regular_price": 6000,
+        "includes": ["Spa Facial", "Classic Pedicure & Manicure", "Full Hand Wax", "Full Leg Wax", "Shampoo (Any Length)", "Hot Oil Massage (Scalp Only)", "Full Face Threading"]
+      }
+    ]
+  },
+  {
+    "slug": "makeup-package",
+    "title": "Makeup Package",
+    "subtitle": null,
+    "note": null,
+    "kind": "packages",
+    "sort_order": 11,
+    "packages": [
+      {
+        "name": "Makeup Package 1",
+        "occasion": "Simple Look",
+        "price": 3000,
+        "regular_price": null,
+        "includes": ["Simple Look", "Sharee Draping", "Normal Hair Style"]
+      },
+      {
+        "name": "Makeup Package 2",
+        "occasion": "Elegant Look",
+        "price": 5000,
+        "regular_price": null,
+        "includes": ["Elegant Look", "Modern/Classy Hair Design", "Hijab", "Jewelry Setting", "Sharee Draping"]
+      },
+      {
+        "name": "Makeup Package 3",
+        "occasion": "Gorgeous Glam",
+        "price": 8000,
+        "regular_price": null,
+        "includes": ["Gorgeous Glam", "Eye Look (Glitter/Shimmer)", "Party Hair Style", "Jewelry Setting", "Sharee Draping"]
+      },
+      {
+        "name": "Makeup Package 4",
+        "occasion": "Base Preparation",
+        "price": 10000,
+        "regular_price": null,
+        "includes": ["Base Preparation Cure", "Eye Look (Glitter/Shimmer)", "High End Foundation", "Customized Eye Look", "Jewelry Setting", "Sharee Draping"]
+      }
+    ]
+  },
+  {
+    "slug": "nail-extension",
+    "title": "Nail Extension",
+    "subtitle": null,
+    "note": null,
+    "kind": "simple",
+    "sort_order": 12,
+    "items": [
+      { "name": "Foil/Glitter/Shimmer Add-on (2 Hand)", "price": 500, "note": "Add-on with extension" },
+      { "name": "Nail Extension Only (2 Hand)", "price": 1500, "note": "Add-on with extension" },
+      { "name": "One Color Gel Extension", "price": 2000, "note": null },
+      { "name": "French Nail Extension (2 Hand)", "price": 2000, "note": null },
+      { "name": "Poly Acrylic Gel Extension (2 Hand)", "price": 3000, "note": null },
+      { "name": "Magnetic Gel Extension (2 Hand)", "price": 4000, "note": null },
+      { "name": "Gel with Shimmer/Glitter/Stone (2 Hand)", "price": 4000, "note": null },
+      { "name": "Acrylic Powder Extension (2 Hand)", "price": 4000, "note": null },
+      { "name": "Flower/Stone/Pearl Add-on (2 Hand)", "price": null, "note": "Add-on with extension — range Tk 1,000-2,000" },
+      { "name": "Disco Glitter/Blooming Gel/Marble/Ombre/Stick Foil Add-on (2 Hand)", "price": null, "note": "Add-on with extension — range Tk 500-2,000" },
+      { "name": "3D Art", "price": null, "note": "Add-on with extension — range Tk 500-3,000" }
+    ]
+  },
+  {
+    "slug": "noor-package",
+    "title": "Noor Package",
+    "subtitle": null,
+    "note": null,
+    "kind": "packages",
+    "sort_order": 13,
+    "packages": [
+      {
+        "name": "Noor Package 1",
+        "occasion": null,
+        "price": 2500,
+        "regular_price": null,
+        "includes": ["Summer Shine Facial with Gold Pack", "Classic Pedicure", "Basic Hair Cut", "Hot Oil Massage", "Shampoo (Any Length) with Smoothing Blow-Dry", "With Smoothing Spa"]
+      },
+      {
+        "name": "Noor Package 2",
+        "occasion": null,
+        "price": 3500,
+        "regular_price": null,
+        "includes": ["Red Rose Facial", "Back Massage with Scrubbing", "Under Arms Waxing", "Eyebrow / Upper Lip Threading", "Hot Oil Massage", "Shampoo (Any Length) with Smoothing Blow-Dry"]
+      },
+      {
+        "name": "Noor Package 3",
+        "occasion": null,
+        "price": 4000,
+        "regular_price": null,
+        "includes": ["Facial with Glow Boost Pack", "Beetroot Pedicure", "Hot Oil Massage", "Basic Hair Cut / Eyebrow Threading", "Shampoo (Any Length) with Smoothing Blow-Dry"]
+      },
+      {
+        "name": "Noor Package 4",
+        "occasion": null,
+        "price": 5000,
+        "regular_price": null,
+        "includes": ["Elegant Pearl Facial", "Classic Manicure & Pedicure", "Eye Brow Pluck", "Hot Oil Massage", "Shampoo with Hair Smoothing Spa"]
+      },
+      {
+        "name": "Noor Package 5",
+        "occasion": null,
+        "price": 6000,
+        "regular_price": null,
+        "includes": ["Hydra Facial", "Premium Oil Massage with Silk & Shine Shampoo", "Keratin Hair Spa", "Foot Scrubbing with Hot Stone Oil Massage"]
+      }
+    ]
+  },
+  {
+    "slug": "shine-set",
+    "title": "Shine Set",
+    "subtitle": null,
+    "note": null,
+    "kind": "tiered",
+    "tier_labels": ["Short", "Medium", "Long"],
+    "sort_order": 14,
+    "items": [
+      { "name": "Keratin Treatment", "prices": [12000, 16000, 20000], "note": null },
+      { "name": "L'oreal Advance Treatment", "prices": [12000, 18000, 25000], "note": null },
+      { "name": "R.P Treatment", "prices": [12000, 18000, 25000], "note": null },
+      { "name": "Brazilian Botox Treatment", "prices": [15000, 18000, 22000], "note": null },
+      { "name": "Premium Omega Treatment", "prices": [17000, 22000, 27000], "note": null },
+      { "name": "Premium Nano Plastia", "prices": [20000, 25000, 30000], "note": null }
+    ]
+  },
+  {
+    "slug": "threading",
+    "title": "Threading",
+    "subtitle": null,
+    "note": null,
+    "kind": "simple",
+    "sort_order": 15,
+    "items": [
+      { "name": "Forehead", "price": 50, "note": null },
+      { "name": "Eye Brow", "price": 100, "note": null },
+      { "name": "Upper Lip", "price": 100, "note": null },
+      { "name": "Upper Lip with Chin", "price": 200, "note": null },
+      { "name": "Chin with Chin", "price": 300, "note": null },
+      { "name": "Full Face", "price": 500, "note": null },
+      { "name": "Full Face with Eyebrow", "price": 600, "note": null }
+    ]
+  },
+  {
+    "slug": "waxing",
+    "title": "Waxing",
+    "subtitle": null,
+    "note": null,
+    "kind": "simple",
+    "sort_order": 16,
+    "items": [
+      { "name": "Eye Brow Wax", "price": 200, "note": null },
+      { "name": "Upper Lip Wax", "price": 200, "note": null },
+      { "name": "Chin Wax", "price": 200, "note": null },
+      { "name": "Under Arm Wax", "price": 600, "note": null },
+      { "name": "Half Leg Wax", "price": 800, "note": null },
+      { "name": "Half Hand Wax", "price": 800, "note": null },
+      { "name": "Full Face Wax", "price": 1000, "note": null },
+      { "name": "Full Leg Wax", "price": 1500, "note": null },
+      { "name": "Full Hand Wax", "price": 1500, "note": null },
+      { "name": "Bikini Wax", "price": 1500, "note": null },
+      { "name": "Brazilian with Bikini", "price": 2000, "note": null },
+      { "name": "Full Body with Bikini", "price": 7000, "note": null }
+    ]
+  },
+  {
+    "slug": "pedicure-manicure",
+    "title": "Pedicure/Manicure",
+    "subtitle": null,
+    "note": null,
+    "kind": "simple",
+    "sort_order": 17,
+    "items": [
+      { "name": "Classic Pedi/Mani", "price": 1500, "note": null },
+      { "name": "Beetroot Pedi/Mani", "price": 2000, "note": null },
+      { "name": "Whitening Pedi & Mani", "price": 2000, "note": null },
+      { "name": "Crystal Pedi & Mani", "price": 3000, "note": null },
+      { "name": "Hot Stone Pedi/Mani", "price": 3000, "note": null },
+      { "name": "D-light Pedi/Mani", "price": 3000, "note": null },
+      { "name": "Russian Paraffin Pedi/Mani", "price": 3500, "note": null },
+      { "name": "Turkish Pedi/Mani", "price": 4000, "note": null },
+      { "name": "Hydra Boost Premium Pedi/Mani", "price": 4000, "note": null },
+      { "name": "Premium Red Rose Pedi/Mani", "price": 4000, "note": null },
+      { "name": "Premium Arabic Pedi/Mani", "price": 5000, "note": null }
+    ]
+  },
+  {
+    "slug": "glow-polish",
+    "title": "Glow Polish",
+    "subtitle": null,
+    "note": null,
+    "kind": "simple",
+    "sort_order": 18,
+    "items": [
+      { "name": "Back Massage", "price": 500, "note": null },
+      { "name": "Back Facial", "price": 1000, "note": null },
+      { "name": "Bikini Brightening with Glow Polish", "price": 1000, "note": null },
+      { "name": "Neck Brightening with Glow Polish", "price": 1000, "note": null },
+      { "name": "Underarm Brightening with Glow Polish", "price": 1000, "note": null },
+      { "name": "Full Face Polish", "price": 1000, "note": null },
+      { "name": "Half Hand & Leg Polish", "price": 1200, "note": null },
+      { "name": "Full Hand & Leg Polish", "price": 2000, "note": null },
+      { "name": "Full Back Polish", "price": 2000, "note": null },
+      { "name": "Full Body Glow Polish", "price": 6000, "note": null }
+    ]
+  },
+  {
+    "slug": "special-offers",
+    "title": "Special Offers",
+    "subtitle": null,
+    "note": "Employees must bring their ID card to avail this offer.",
+    "kind": "packages",
+    "sort_order": 19,
+    "packages": [
+      {
+        "name": "Corporate Offer",
+        "occasion": null,
+        "price": 4500,
+        "regular_price": null,
+        "includes": ["Smooth & Silky Hair Spa", "Any Hair Cut", "Hydra Jelly Facial", "Half Leg Wax", "Half Hand Wax", "Full Face Threading"]
+      }
+    ]
+  },
+  {
+    "slug": "princess-package",
+    "title": "Princess Package",
+    "subtitle": null,
+    "note": null,
+    "kind": "packages",
+    "sort_order": 19,
+    "packages": [
+      {
+        "name": "Princess Package",
+        "occasion": null,
+        "price": 2000,
+        "regular_price": 2500,
+        "includes": ["Hair Cut", "Princess Pedicure", "Oil Massage & Mild Scalp Purifier"]
+      }
+    ]
+  },
+  {
+    "slug": "teenage-package",
+    "title": "Teenage Package",
+    "subtitle": null,
+    "note": null,
+    "kind": "packages",
+    "sort_order": 20,
+    "packages": [
+      {
+        "name": "Teenage Package",
+        "occasion": null,
+        "price": 2500,
+        "regular_price": 3000,
+        "includes": ["Under Arm Wax", "Soft Face Cleansing", "Sparkling Pedi & Mani"]
+      }
+    ]
+  },
+  {
+    "slug": "lash-brow",
+    "title": "Eye Lash & Brow",
+    "subtitle": null,
+    "note": null,
+    "kind": "simple",
+    "sort_order": 21,
+    "items": [
+      { "name": "Volume Eye Lash", "price": 3000, "note": null },
+      { "name": "Lash Lifting", "price": 3000, "note": null },
+      { "name": "Cat Eye / Doll Eye Lash", "price": 3500, "note": null },
+      { "name": "Wispy Eye", "price": 4000, "note": null },
+      { "name": "Eye Brow Micro Blending", "price": 4000, "note": null },
+      { "name": "Hybrid Eye Lash", "price": 4200, "note": null },
+      { "name": "Mega Volume", "price": 5000, "note": null }
+    ]
+  }
+]

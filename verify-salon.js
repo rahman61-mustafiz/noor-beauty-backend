@@ -33,7 +33,7 @@ try {
     ['/api/admin/services', './src/routes/admin/services'],
     ['/api/admin/reports', './src/routes/admin/reports'],
     ['/api/admin/ledger', './src/routes/admin/ledger'],
-    ['/api/admin/settings', './src/routes/admin/settings'],          // NEW
+    ['/api/admin/settings', './src/routes/admin/salonSettings'],     // NEW
     ['/api/admin/salon-visits', './src/routes/admin/salonVisits'],   // NEW
     ['/api/admin/salon-reports', './src/routes/admin/salonReports'], // NEW
   ];

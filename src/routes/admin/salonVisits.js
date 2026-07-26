@@ -34,7 +34,7 @@ router.get('/', adminAuth, async (req, res) => {
           customerName: v.customerName,
           customerPhone: v.customerPhone || '',
           customerSource: v.customerSource,
-          services: (v.items || []).map((i) => ({ name: i.name, price: i.price })),
+          services: (v.items || []).map((i) => ({ name: i.name, price: i.price, quantity: i.quantity || 1 })),
           staff: (v.staff || []).map((s) => ({ id: s._id.toString(), name: s.name })),
           subtotal: v.subtotal,
           discountPercent: v.discountPercent,

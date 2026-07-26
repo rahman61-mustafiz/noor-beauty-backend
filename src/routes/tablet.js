@@ -15,6 +15,9 @@ router.use(tabletAuth); // guard all tablet endpoints (enforced once TABLET_KEY 
 
 const isObjectId = (v) => typeof v === 'string' && /^[0-9a-fA-F]{24}$/.test(v);
 
+// Display helper: "Eyebrow Threading" or "Eyebrow Threading ×3" for quantity > 1.
+const displayName = (i) => (i.quantity > 1 ? `${i.name} ×${i.quantity}` : i.name);
+
 // Bangladesh is UTC+6. Mirrors the date logic in src/routes/admin/salonVisits.js.
 const BD  = 6 * 60 * 60 * 1000;
 const pad = (n) => String(n).padStart(2, '0');
@@ -56,7 +59,7 @@ router.get('/customer/:phone', async (req, res) => {
         recentVisits: recent.map((v) => ({
           id: v._id.toString(),
           date: v.date,
-          services: (v.items || []).map((i) => i.name),
+          services: (v.items || []).map(displayName),
           staff: (v.staff || []).map((s) => s.name),
           finalAmount: v.finalAmount,
         })),
@@ -163,8 +166,9 @@ router.post('/visit', async (req, res) => {
       service: isObjectId(it.serviceId) ? it.serviceId : undefined,
       name: it.name,
       price: Number(it.price) || 0,
+      quantity: Math.max(1, Math.round(Number(it.quantity) || 1)),
     }));
-    const subtotal = lineItems.reduce((sum, it) => sum + it.price, 0);
+    const subtotal = lineItems.reduce((sum, it) => sum + it.price * it.quantity, 0);
 
     // Server-side discount cap enforcement
     const cap = Number(await Settings.get('discountCapPercent', 20)) || 0;
@@ -292,7 +296,7 @@ router.get('/today-bookings', async (req, res) => {
       status: 'done',
       name: v.customerName,
       phone: v.customerPhone || '',
-      services: (v.items || []).map((i) => i.name),
+      services: (v.items || []).map(displayName),
       staff: (v.staff || []).map((s) => s.name).filter(Boolean),
       _t: v.date ? new Date(v.date).getTime() : 0,
     }));

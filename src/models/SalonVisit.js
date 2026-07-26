@@ -2,11 +2,14 @@ const mongoose = require('mongoose');
 
 // Each selected service is snapshotted (name + price) at the moment of the visit,
 // so historical records stay correct even if a Service price changes later.
+// `price` is the unit price; `quantity` lets the same service be billed more than
+// once under one line (e.g. 3x Eyebrow Threading) instead of 3 duplicate lines.
 const lineItemSchema = new mongoose.Schema(
   {
-    service: { type: mongoose.Schema.Types.ObjectId, ref: 'Service' },
-    name:    { type: String, required: true, trim: true },
-    price:   { type: Number, required: true },
+    service:  { type: mongoose.Schema.Types.ObjectId, ref: 'Service' },
+    name:     { type: String, required: true, trim: true },
+    price:    { type: Number, required: true },
+    quantity: { type: Number, default: 1, min: 1 },
   },
   { _id: false }
 );
