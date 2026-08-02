@@ -1,13 +1,14 @@
 const router = require('express').Router();
 
-const SalonVisit    = require('../models/SalonVisit');
-const SalonCustomer = require('../models/SalonCustomer');
-const Settings      = require('../models/Settings');
-const Booking       = require('../models/Booking');      // read + status-cancel only
-const User          = require('../models/User');         // READ ONLY here
-const Service       = require('../models/Service');      // READ ONLY here
-const ServiceType   = require('../models/ServiceType');  // READ ONLY here
-const Staff         = require('../models/Staff');         // READ ONLY here
+const SalonVisit      = require('../models/SalonVisit');
+const SalonCustomer   = require('../models/SalonCustomer');
+const Settings        = require('../models/Settings');
+const Booking         = require('../models/Booking');      // read + status-cancel only
+const AdvanceBooking  = require('../models/AdvanceBooking'); // READ ONLY here (see routes/advanceBookings.js)
+const User            = require('../models/User');         // READ ONLY here
+const Service         = require('../models/Service');      // READ ONLY here
+const ServiceType     = require('../models/ServiceType');  // READ ONLY here
+const Staff           = require('../models/Staff');         // READ ONLY here
 
 const tabletAuth = require('../middleware/tabletAuth');
 router.use(tabletAuth); // guard all tablet endpoints (enforced once TABLET_KEY is set)
@@ -277,7 +278,7 @@ router.get('/today-bookings', async (req, res) => {
     const start = new Date(`${todayBd}T00:00:00.000+06:00`);
     const end   = new Date(`${todayBd}T23:59:59.999+06:00`);
 
-    const [visits, bookings] = await Promise.all([
+    const [visits, bookings, advancesToday] = await Promise.all([
       SalonVisit.find({ date: { $gte: start, $lte: end } })
         .populate('staff', 'name')
         .lean(),
@@ -288,6 +289,10 @@ router.get('/today-bookings', async (req, res) => {
         .populate('customer', 'name phone')
         .populate('staff', 'name')
         .lean(),
+      // Deposits taken TODAY on future-event advance bookings — these count as
+      // today's cash even though the event itself is later. Settlement visits
+      // (the due-amount collection) already appear via `visits` above.
+      AdvanceBooking.find({ createdAt: { $gte: start, $lte: end } }).select('advancePayments').lean(),
     ]);
 
     const walkinRows = visits.map((v) => ({
@@ -317,14 +322,17 @@ router.get('/today-bookings', async (req, res) => {
       .map(({ _t, ...row }) => row); // drop internal sort key
 
     // Today's CASH income only: the cash portion of each walk-in's payment
-    // split. bKash/card excluded; app bookings never count. Legacy visits (no
-    // split stored) fall back to the old single paymentMethod. Tablet-only.
-    const revenue = visits.reduce((sum, v) => {
+    // split, PLUS the cash portion of any advance deposits taken today.
+    // bKash/card excluded; app bookings never count. Legacy visits (no split
+    // stored) fall back to the old single paymentMethod. Tablet-only.
+    const visitCash = visits.reduce((sum, v) => {
       const cash = v.payments
         ? (Number(v.payments.cash) || 0)
         : (v.paymentMethod === 'cash' ? (Number(v.finalAmount) || 0) : 0);
       return sum + cash;
     }, 0);
+    const advanceCash = advancesToday.reduce((sum, b) => sum + (Number(b.advancePayments?.cash) || 0), 0);
+    const revenue = visitCash + advanceCash;
 
     res.json({ data: { count: bookings_.length, revenue, bookings: bookings_ } });
   } catch (err) {
@@ -479,25 +487,30 @@ router.put('/customer/:id', async (req, res) => {
 
 // ── GET /api/tablet/today-sales ───────────────────────────────────────────────
 // Read-only TOTAL sales for today (BD/UTC+6): SalonVisit.finalAmount +
-// Booking.totalAmount (confirmed/completed). Mirrors the `totalRevenue` from
-// /api/admin/salon-reports/dashboard, but behind the tablet key (no admin/MFA).
+// Booking.totalAmount (confirmed/completed) + today's advance-booking deposits.
+// Mirrors the `totalRevenue` from /api/admin/salon-reports/dashboard, but
+// behind the tablet key (no admin/MFA).
 router.get('/today-sales', async (req, res) => {
   try {
     const todayBd = bdDateStr(new Date());
     const start = new Date(`${todayBd}T00:00:00.000+06:00`);
     const end   = new Date(`${todayBd}T23:59:59.999+06:00`);
 
-    const [visits, bookings] = await Promise.all([
+    const [visits, bookings, advancesToday] = await Promise.all([
       SalonVisit.find({ date: { $gte: start, $lte: end } }).select('finalAmount').lean(),
       Booking.find({
         status: { $in: ['confirmed', 'completed'] },
         startTime: { $gte: start, $lte: end },
       }).select('totalAmount').lean(),
+      // Deposits taken today on future-event bookings. The eventual due-amount
+      // collection (on settlement day) shows up via `visits` on that later day.
+      AdvanceBooking.find({ createdAt: { $gte: start, $lte: end } }).select('advanceAmount').lean(),
     ]);
 
-    const visitRevenue   = visits.reduce((s, v) => s + (Number(v.finalAmount) || 0), 0);
-    const bookingRevenue = bookings.reduce((s, b) => s + (Number(b.totalAmount) || 0), 0);
-    const totalSales = visitRevenue + bookingRevenue;
+    const visitRevenue    = visits.reduce((s, v) => s + (Number(v.finalAmount) || 0), 0);
+    const bookingRevenue  = bookings.reduce((s, b) => s + (Number(b.totalAmount) || 0), 0);
+    const advanceRevenue  = advancesToday.reduce((s, b) => s + (Number(b.advanceAmount) || 0), 0);
+    const totalSales = visitRevenue + bookingRevenue + advanceRevenue;
 
     res.json({ date: todayBd, totalSales });
   } catch (err) {

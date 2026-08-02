@@ -36,6 +36,7 @@ app.use('/api/banner',            require('./routes/banner'));
 app.use('/api/home-images',       require('./routes/homeImages'));
 app.use('/api/home-images',       require('./routes/homeImages'));
 app.use('/api/tablet',            require('./routes/tablet'));
+app.use('/api/tablet/advance-bookings', require('./routes/advanceBookings'));
 app.use('/api/admin/dashboard',    require('./routes/admin/dashboard'));
 app.use('/api/admin/customers',    require('./routes/admin/customers'));
 app.use('/api/admin/bookings',     require('./routes/admin/bookings'));

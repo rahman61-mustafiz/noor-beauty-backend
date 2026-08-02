@@ -1,7 +1,8 @@
-const router     = require('express').Router();
-const adminAuth  = require('../../middleware/adminAuth');
-const SalonVisit = require('../../models/SalonVisit');
-const Booking    = require('../../models/Booking');
+const router        = require('express').Router();
+const adminAuth     = require('../../middleware/adminAuth');
+const SalonVisit    = require('../../models/SalonVisit');
+const Booking       = require('../../models/Booking');
+const AdvanceBooking = require('../../models/AdvanceBooking');
 
 const BD  = 6 * 60 * 60 * 1000; // BD is UTC+6
 const pad = (n) => String(n).padStart(2, '0');
@@ -39,9 +40,15 @@ router.get('/dashboard', adminAuth, async (req, res) => {
       startTime: { $gte: start, $lte: end },
     }).populate('staff', 'name').lean();
 
+    // Deposits taken in-range on future-event advance bookings. The eventual
+    // due-amount collection (on settlement day) shows up via `visits` on that
+    // later day, so this never double-counts.
+    const advancesInRange = await AdvanceBooking.find({ createdAt: { $gte: start, $lte: end } }).lean();
+
     const visitRevenue   = visits.reduce((s, v) => s + (v.finalAmount || 0), 0);
     const bookingRevenue = bookings.reduce((s, b) => s + (b.totalAmount || 0), 0);
-    const totalRevenue   = visitRevenue + bookingRevenue;
+    const advanceRevenue = advancesInRange.reduce((s, b) => s + (b.advanceAmount || 0), 0);
+    const totalRevenue   = visitRevenue + bookingRevenue + advanceRevenue;
 
     const servicesDone  = visits.reduce((s, v) => s + (v.items || []).reduce((qs, i) => qs + (i.quantity || 1), 0), 0);
     const discountTotal = visits.reduce((s, v) => s + (v.discountAmount || 0), 0);
@@ -58,6 +65,11 @@ router.get('/dashboard', adminAuth, async (req, res) => {
         // Legacy visit: whole amount on the single recorded method.
         payment[v.paymentMethod] += v.finalAmount || 0;
       }
+    });
+    advancesInRange.forEach((b) => {
+      payment.cash  += (b.advancePayments && b.advancePayments.cash)  || 0;
+      payment.bkash += (b.advancePayments && b.advancePayments.bkash) || 0;
+      payment.card  += (b.advancePayments && b.advancePayments.card)  || 0;
     });
 
     const custSet = new Set();
@@ -91,7 +103,8 @@ router.get('/dashboard', adminAuth, async (req, res) => {
       data: {
         from: start, to: end,
         customerCount: custSet.size,
-        totalRevenue, visitRevenue, bookingRevenue,
+        totalRevenue, visitRevenue, bookingRevenue, advanceRevenue,
+        advanceBookingCount: advancesInRange.length,
         servicesDone, discountTotal, discountCount,
         payment,
         todaysCustomers: visits.map((v) => ({

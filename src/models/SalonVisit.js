@@ -50,6 +50,12 @@ const salonVisitSchema = new mongoose.Schema(
     source:          { type: String, default: 'tablet' },
     date:            { type: Date, default: Date.now },
     note:            { type: String },
+
+    // Set only when this visit is the settlement of an AdvanceBooking: the
+    // amount already collected earlier as a deposit (not part of finalAmount,
+    // which is just today's collection) plus a back-reference for lookup.
+    advanceApplied:    { type: Number, default: 0 },
+    advanceBookingRef: { type: mongoose.Schema.Types.ObjectId, ref: 'AdvanceBooking' },
   },
   { timestamps: true }
 );
