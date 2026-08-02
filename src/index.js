@@ -41,6 +41,7 @@ app.use('/api/admin/dashboard',    require('./routes/admin/dashboard'));
 app.use('/api/admin/customers',    require('./routes/admin/customers'));
 app.use('/api/admin/bookings',     require('./routes/admin/bookings'));
 app.use('/api/admin/advance-bookings', require('./routes/admin/advanceBookings'));
+app.use('/api/admin/website-bookings', require('./routes/admin/websiteBookings'));
 app.use('/api/admin/staff',        require('./routes/admin/staff'));
 app.use('/api/admin/services',     require('./routes/admin/services'));
 app.use('/api/admin/service-types', require('./routes/admin/serviceTypes'));
