@@ -36,6 +36,19 @@ router.put('/:id', adminAuth, async (req, res) => {
   }
 });
 
+// Cancelled app bookings carry no payment/revenue data (only confirmed/completed
+// count toward any report), so a hard delete here is safe — nothing downstream
+// re-reads a cancelled Booking for money math.
+router.delete('/:id', adminAuth, async (req, res) => {
+  try {
+    const deleted = await Booking.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ message: 'Booking not found' });
+    res.json({ data: { id: req.params.id, deleted: true } });
+  } catch (err) {
+    res.status(500).json({ message: 'Delete failed' });
+  }
+});
+
 function toDto(b) {
   return {
     id: b._id.toString(),
