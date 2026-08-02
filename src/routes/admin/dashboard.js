@@ -28,8 +28,13 @@ router.get('/', adminAuth, async (req, res) => {
       })
     );
 
-    const recentBookings = await Booking.find()
-      .sort({ createdAt: -1 })
+    // Future, not-yet-happened app bookings only — past ones (however recent)
+    // belong on the Bookings page, not cluttering the dashboard.
+    const recentBookings = await Booking.find({
+      startTime: { $gt: new Date() },
+      status: { $nin: ['cancelled', 'completed'] },
+    })
+      .sort({ startTime: 1 })
       .limit(10)
       .populate('customer', 'name')
       .populate('service', 'name')

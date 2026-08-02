@@ -38,7 +38,7 @@ router.get('/dashboard', adminAuth, async (req, res) => {
     const bookings = await Booking.find({
       status: { $in: ['confirmed', 'completed'] },
       startTime: { $gte: start, $lte: end },
-    }).populate('staff', 'name').lean();
+    }).populate('staff', 'name').populate('customer', 'name phone').lean();
 
     // Deposits taken in-range on future-event advance bookings. The eventual
     // due-amount collection (on settlement day) shows up via `visits` on that
@@ -75,6 +75,32 @@ router.get('/dashboard', adminAuth, async (req, res) => {
     const custSet = new Set();
     visits.forEach((v) => custSet.add(v.customerPhone || v.customerName));
 
+    // Combined unique-customer count across tablet visits + app bookings (both
+    // already store the same normalized E.164 phone, so a plain Set union is
+    // accurate). Kept separate from `custSet`/`customerCount` above, which the
+    // Salon — Tablet page uses for tablet-only figures — don't change that meaning.
+    const combinedCustSet = new Set(custSet);
+    bookings.forEach((b) => combinedCustSet.add((b.customer && (b.customer.phone || b.customer.name)) || 'unknown'));
+    const combinedCustomerCount = combinedCustSet.size;
+
+    // Top services this range, combining tablet visit line items (by quantity)
+    // and app bookings (1 each) — reuses the `visits`/`bookings` already fetched.
+    const svcMap = {};
+    function bumpService(name, count, revenue) {
+      const key = name || 'Service';
+      if (!svcMap[key]) svcMap[key] = { name: key, count: 0, revenue: 0 };
+      svcMap[key].count += count;
+      svcMap[key].revenue += revenue;
+    }
+    visits.forEach((v) => {
+      (v.items || []).forEach((i) => bumpService(i.name, i.quantity || 1, (i.price || 0) * (i.quantity || 1)));
+    });
+    bookings.forEach((b) => bumpService(b.serviceName, 1, b.totalAmount || 0));
+    const topServices = Object.values(svcMap)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 8)
+      .map((s) => ({ ...s, revenue: Math.round(s.revenue) }));
+
     // ── Beautician performance (work split) ──
     // Tablet visit: finalAmount split equally across assigned staff.
     // App booking: single assigned staff gets the full amount.
@@ -103,8 +129,10 @@ router.get('/dashboard', adminAuth, async (req, res) => {
       data: {
         from: start, to: end,
         customerCount: custSet.size,
+        combinedCustomerCount,
         totalRevenue, visitRevenue, bookingRevenue, advanceRevenue,
         advanceBookingCount: advancesInRange.length,
+        topServices,
         servicesDone, discountTotal, discountCount,
         payment,
         todaysCustomers: visits.map((v) => ({
